@@ -1,0 +1,127 @@
+.app {
+  height: 100vh;
+  background: url("https://images.unsplash.com/photo-1414235077428-338989a2e8c0")
+    no-repeat center center/cover;
+  position: relative;
+  color: white;
+}
+
+/* Header bar */
+.header-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  background: black;
+  z-index: 999;
+}
+
+/* Burger */
+.burger {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  font-size: 28px;
+  cursor: pointer;
+  z-index: 1001;
+  background: black;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+}
+
+/* Top right */
+.top-right {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+.search {
+  padding: 5px 10px;
+  border-radius: 20px;
+  border: none;
+}
+
+.profile {
+  width: 35px;
+  height: 35px;
+  background: lightgray;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+}
+
+/* Center content */
+.content {
+  position: absolute;
+  bottom: 100px;
+  width: 100%;
+}
+
+/* Sidebar */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: -250px;
+  width: 250px;
+  height: 100%;
+  background: #ddd;
+  color: black;
+  padding-top: 60px;
+  transition: 0.3s;
+  z-index: 1002;
+}
+
+.sidebar.open {
+  left: 0;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar li {
+  padding: 15px;
+  border-bottom: 1px solid #bbb;
+}
+
+.sidebar li button {
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  color: black;
+  padding: 0;
+}
+
+.sidebar li:hover {
+  background: #ccc;
+}
+
+/* Close button */
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/* Overlay */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.4);
+  z-index: 1000;
+}
