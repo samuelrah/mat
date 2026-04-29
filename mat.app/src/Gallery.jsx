@@ -15,30 +15,29 @@ const images = [
 
 export default function Gallery() {
   return (
-    <div className="container py-4" style={{ background: "#444444" }}>
-      <div className="text-center mb-4">
-        <h2 className="text-white">Galleri</h2>
-        <p className="text-white-50">Bilder på mat och dryck från vårt galleri.</p>
-      </div>
+    <div className="gallery-page" style={{ background: "#444444", minHeight: "100vh" }}>
+      <div className="container-fluid py-4 px-5">
+        <div className="text-center mb-4">
+          <h2 className="text-white">Galleri</h2>
+          <p className="text-white-50">Bilder på mat och dryck från vår galleri.</p>
+        </div>
 
-      <div className="row row-cols-3 g-4">
-        {images.map((image, index) => (
-          <div className="col" key={image}>
-            <div className="card h-100 shadow-sm overflow-hidden">
-              <img
-                src={process.env.PUBLIC_URL + "/MAT-IMAGES/" + image}
-                className="card-img-top"
-                alt={`Galleri bild ${index + 1}`}
-              />
-              <div className="card-body bg-dark text-white">
-                <p className="card-text mb-0">Bild {index + 1}</p>
+        <div className="row row-cols-3 g-4">
+          {images.map((image, index) => (
+            <div className="col" key={image}>
+              <div className="card h-auto shadow-sm overflow-hidden">
+                <img
+                  src={process.env.PUBLIC_URL + "/MAT-IMAGES/" + image}
+                  className="card-img-top"
+                  alt={`Galleri bild ${index + 1}`}
+                  style={{ height: "270px", objectFit: "cover", width: "100%" }}
+                />
               </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );
 }
-
 
