@@ -16,6 +16,8 @@ export default function Gallery() {
         <img id="galleri-bild" src={"mat.app/public/MAT-IMAGES/9854146805790.webp"} alt="react logo" />
         <img id="galleri-bild" src={"mat.app/public/MAT-IMAGES/Chicken-Fajita-Pasta-in-Pan-Square.jpg"} alt="react logo" />
         <img id="galleri-bild" src={"mat.app/public/MAT-IMAGES/creamy_roasted_red_91087_16x9.jpg"} alt="react logo" />
+        <img src="/MAT-IMAGES/1F0A0570-1-1025x1536.jpg" alt="Galleri bild" />
+        <img src={process.env.PUBLIC_URL + "/MAT-IMAGES/1F0A0570-1-1025x1536.jpg"} alt="Galleri bild" />
       </div>
     </div>
   );
