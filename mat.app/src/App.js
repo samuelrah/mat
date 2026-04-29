@@ -3,6 +3,7 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
 import Home from "./Home";
 import About from "./About";
+import Account from "./Account";
 import Gallery from "./Gallery";
 import Menu from "./Menu";
 import Cart from "./Cart";
@@ -41,9 +42,9 @@ function App() {
         {/* Sök + profil */}
         <div className="top-right">
           <input type="text" placeholder="sök" className="search" />
-          <div className="profile"></div>
+            <div className="profile" onClick={() => {("/account");}}></div>
         </div>
-        {/* Sidebar */}
+          {/* Sidebar */}
         <Sidebar menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
         {/* Overlay */}
         {menuOpen && (
@@ -53,7 +54,8 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
-          <Route path="/gallery" element={<Gallery />} />
+            <Route path="/account" element={<Account />} />
+            <Route path="/gallery" element={<Gallery />} />
           <Route path="/menu" element={<Menu />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/payment" element={<Payment />} />
@@ -63,4 +65,4 @@ function App() {
   );
 }
 
-export default App;
+export default App; 
