@@ -1,0 +1,54 @@
+import { React } from "react";
+
+export default function Account() { 
+    return (
+        <div className="container py-4">
+            <div className="row justify-content-center">
+                <div className="col-12 col-md-8">
+                    <div className="mb-4">
+                        <h2>Account</h2>
+                        <p>Manage your profile, view purchase history, and check your points.</p>
+                    </div>
+
+                    <div className="card mb-3 bg-dark border-secondary text-white">
+                        <div className="card-body">
+                            <h5 className="card-title">Points</h5>
+                            <p className="card-text display-6">5 kr</p>
+                            <p className="card-text text-muted">Current reward points balance</p>
+                        </div>
+                    </div>
+
+                    <div className="card mb-3 bg-dark border-secondary text-white">
+                        <div className="card-body">
+                            <h5 className="card-title">Settings</h5>
+                            <div className="mb-2">
+                                <strong>Name:</strong>
+                                <div>My Name</div>
+                            </div>
+                            <div className="mb-2">
+                                <strong>Password:</strong>
+                                <div>••••••••</div>
+                            </div>
+                            <div>
+                                <strong>Location:</strong>
+                                <div>Stockholm, Sweden</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="card bg-dark border-secondary text-white">
+                        <div className="card-body">
+                            <h5 className="card-title">Purchase History</h5>
+                            <ul className="list-unstyled mb-0">
+                                <li>Order #1024 - 2026-04-20 - 89 kr</li>
+                                <li>Order #1017 - 2026-03-18 - 45 kr</li>
+                                <li>Order #1006 - 2026-02-10 - 120 kr</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+
+}

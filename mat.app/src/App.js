@@ -1,6 +1,6 @@
 
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useNavigate, Link } from "react-router-dom";
 import Home from "./Home";
 import About from "./About";
 import Account from "./Account";
@@ -42,7 +42,7 @@ function App() {
         {/* Sök + profil */}
         <div className="top-right">
           <input type="text" placeholder="sök" className="search" />
-            <div className="profile" onClick={() => {("/account");}}></div>
+          <Link className="profile" to="/account" />
         </div>
           {/* Sidebar */}
         <Sidebar menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
