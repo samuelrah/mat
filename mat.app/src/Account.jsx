@@ -1,6 +1,24 @@
-import { React } from "react";
+import { React, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Account() { 
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Check if user is authenticated - for demo, check localStorage
+    const user = localStorage.getItem('user');
+    if (!user) {
+      // Redirect to login if not authenticated
+      navigate('/login');
+    } else {
+      setIsAuthenticated(true);
+    }
+  }, [navigate]);
+
+  if (!isAuthenticated) {
+    return null; // Will redirect, show nothing while redirecting
+  } 
     return (
         <div className="container py-4">
             <div className="row justify-content-center">

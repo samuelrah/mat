@@ -8,6 +8,7 @@ import Gallery from "./Gallery";
 import Menu from "./Menu";
 import Cart from "./Cart";
 import Payment from "./Payment";
+import Login from "./Login";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 
@@ -59,6 +60,7 @@ function App() {
           <Route path="/menu" element={<Menu />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/payment" element={<Payment />} />
+          <Route path="/login" element={<Login />} />
         </Routes>
       </div>
     </Router>
