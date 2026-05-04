@@ -9,6 +9,7 @@ import Menu from "./Menu";
 import Cart from "./Cart";
 import Payment from "./Payment";
 import Login from "./Login";
+import Admin from "./Admin";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 
@@ -26,6 +27,7 @@ function Sidebar({ menuOpen, setMenuOpen }) {
         <li><button onClick={() => {navigate("/menu"); setMenuOpen(false);}}>Meny</button></li>
         <li><button onClick={() => {navigate("/cart"); setMenuOpen(false);}}>Kundvagn</button></li>
         <li><button onClick={() => {navigate("/payment"); setMenuOpen(false);}}>Betalning</button></li>
+        <li><button onClick={() => {navigate("/admin"); setMenuOpen(false);}}>Admin</button></li>
       </ul>
     </div>
   );
@@ -60,6 +62,7 @@ function App() {
           <Route path="/menu" element={<Menu />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/payment" element={<Payment />} />
+          <Route path="/admin" element={<Admin />} />
           <Route path="/login" element={<Login />} />
         </Routes>
       </div>
