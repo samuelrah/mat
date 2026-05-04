@@ -2,7 +2,7 @@ import React from "react";
 
 export default function About() {
   return (
-    <div className="about-page d-flex flex-column justify-content-center align-items-center" style={{height: '100vh', background: '#444', color: 'white'}}>
+    <div className="about-page d-flex flex-column justify-content-center align-items-center" style={{height: '100vh', color: 'white'}}>
       <div className="text-center" style={{marginTop: 100}}>
         <h5>Om oss</h5>
         <p style={{maxWidth: 400}}>

@@ -1,17 +1,17 @@
 
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, useNavigate, Link } from "react-router-dom";
-import Home from "./Home";
-import About from "./About";
-import Account from "./Account";
-import Gallery from "./Gallery";
-import Menu from "./Menu";
-import Cart from "./Cart";
-import Payment from "./Payment";
-import Login from "./Login";
-import Admin from "./Admin";
+import Home from "../JSX/Home";
+import About from "../JSX/About";
+import Account from "../JSX/Account";
+import Gallery from "../JSX/Gallery";
+import Menu from "../JSX/Menu";
+import Cart from "../JSX/Cart";
+import Payment from "../JSX/Payment";
+import Login from "../JSX/Login";
+import Admin from "../JSX/Admin";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "./App.css";
+import "../CSS/App.css";
 
 function Sidebar({ menuOpen, setMenuOpen }) {
   const navigate = useNavigate();
