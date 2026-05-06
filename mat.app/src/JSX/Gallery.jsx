@@ -20,7 +20,7 @@ export default function Gallery() {
     <div className="gallery-page" style={{ background: "#444444", minHeight: "100vh" }}>
       <div className="container-fluid py-4 px-5">
         <div className="gallery-header mb-4">
-          <h2 className="text-white" style={{'margin-top': '1000px', 'text-align': 'left'}}>Galleri</h2>
+          <h2 className="text-white" style={{'margin-top': '100px', 'text-align': 'left'}}>Galleri</h2>
           <p className="text-white-50">Bilder på mat och dryck från vår galleri.</p>
         </div>
 
