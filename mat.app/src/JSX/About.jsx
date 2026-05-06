@@ -12,7 +12,7 @@ export default function About() {
       <div className="w-100 d-flex justify-content-between align-items-end" style={{position: 'absolute', bottom: 10, left: 0, padding: '0 20px', fontSize: 12}}>
         <div>
           kontakt information:<br/>
-          exempel@gmail.com Telefonnummer: 079-358 08 19
+          exempel@gmail.com Telefonnummer: 1177
         </div>
         <div>
           Address: Kronhusgatan
