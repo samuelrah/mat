@@ -15,6 +15,16 @@ import "../CSS/App.css";
 
 function Sidebar({ menuOpen, setMenuOpen }) {
   const navigate = useNavigate();
+  const [isAdmin, setIsAdmin] = React.useState(false);
+
+  React.useEffect(() => {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      const user = JSON.parse(userData);
+      setIsAdmin(user.isAdmin || false);
+    }
+  }, []);
+
   return (
     <div className={`sidebar ${menuOpen ? "open" : ""}`}>
       <div className="close-btn" onClick={() => setMenuOpen(false)}>
@@ -27,7 +37,7 @@ function Sidebar({ menuOpen, setMenuOpen }) {
         <li><button onClick={() => {navigate("/menu"); setMenuOpen(false);}}>Meny</button></li>
         <li><button onClick={() => {navigate("/cart"); setMenuOpen(false);}}>Kundvagn</button></li>
         <li><button onClick={() => {navigate("/payment"); setMenuOpen(false);}}>Betalning</button></li>
-        <li><button onClick={() => {navigate("/admin"); setMenuOpen(false);}}>Admin</button></li>
+        {isAdmin && <li><button onClick={() => {navigate("/admin"); setMenuOpen(false);}}>Admin</button></li>}
       </ul>
     </div>
   );
@@ -35,23 +45,34 @@ function Sidebar({ menuOpen, setMenuOpen }) {
 
 function App() {
   const [menuOpen, setMenuOpen] = React.useState(false);
+  const [isAuthenticated, setIsAuthenticated] = React.useState(false);
+
+  React.useEffect(() => {
+    const userData = localStorage.getItem('user');
+    setIsAuthenticated(!!userData);
+  }, []);
+
   return (
     <Router>
       <div className="app">
-        {/* Burger ikon */}
-        <div className="burger" onClick={() => setMenuOpen(true)}>
-          ☰
-        </div>
-        {/* Sök + profil */}
-        <div className="top-right">
-          <input type="text" placeholder="sök" className="search" />
-          <Link className="profile" to="/account" />
-        </div>
-          {/* Sidebar */}
-        <Sidebar menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
-        {/* Overlay */}
-        {menuOpen && (
-          <div className="overlay" onClick={() => setMenuOpen(false)}></div>
+        {isAuthenticated && (
+          <>
+            {/* Burger ikon */}
+            <div className="burger" onClick={() => setMenuOpen(true)}>
+              ☰
+            </div>
+            {/* Sök + profil */}
+            <div className="top-right">
+              <input type="text" placeholder="sök" className="search" />
+              <Link className="profile" to="/account" />
+            </div>
+              {/* Sidebar */}
+            <Sidebar menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
+            {/* Overlay */}
+            {menuOpen && (
+              <div className="overlay" onClick={() => setMenuOpen(false)}></div>
+            )}
+          </>
         )}
         {/* Main content */}
         <Routes>

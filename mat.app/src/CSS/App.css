@@ -1,7 +1,6 @@
 .app {
-  height: 100vh;
-  background: url("../Images/bg.png")
-    no-repeat center center/cover;
+  min-height: 100vh;
+  background: url("../Images/bg.png") no-repeat center center/cover fixed;
   position: relative;
   color: white;
 }
@@ -258,6 +257,16 @@
 
 .form-group {
   margin-bottom: 20px;
+}
+
+.name-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.name-row .form-group {
+  margin-bottom: 16px;
 }
 
 .form-control {
