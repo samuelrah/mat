@@ -1,6 +1,16 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function About() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const userData = localStorage.getItem('user');
+    if (!userData) {
+      navigate('/login');
+    }
+  }, [navigate]);
+
   return (
     <div className="about-page d-flex flex-column justify-content-center" style={{height: '100vh', color: 'white'}}>
       <div className="text-center" style={{marginTop: 100, maxWidth: "45%"}}>

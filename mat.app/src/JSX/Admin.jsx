@@ -1,6 +1,34 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Admin() {
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Check if user is authenticated and has admin permissions
+    const userData = localStorage.getItem('user');
+    if (!userData) {
+      navigate('/login');
+      return;
+    }
+    
+    const user = JSON.parse(userData);
+    if (!user.isAdmin) {
+      // Redirect non-admins back to home
+      navigate('/');
+      return;
+    }
+    
+    setIsAdmin(true);
+    setLoading(false);
+  }, [navigate]);
+
+  if (loading || !isAdmin) {
+    return null; // Will redirect
+  }
+
   return (
     <div className="admin-page">
       <div className="admin-header">
