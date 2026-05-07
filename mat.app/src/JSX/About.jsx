@@ -12,7 +12,14 @@ export default function About() {
       <div className="w-100 d-flex justify-content-between align-items-end" style={{position: 'absolute', bottom: 10, left: 0, padding: '0 20px', fontSize: 17}}>
         <div>
           kontakt information:<br/>
-          <a href="samuel.rahseparmohammadi@elev.ga.ntig.se">exempel@gmail.com</a> Telefonnummer: 1177
+            <a 
+              href="https://mail.google.com/mail/?view=cm&fs=1&to=samuel.rahseparmohammadi@elev.ga.ntig.se" 
+              target="_blank" 
+              rel="noopener noreferrer"
+            >
+              samuel.rahseparmohammadi@elev.ga.ntig.se
+            </a>          
+            <a href="tel:1177">Telefonnummer: 1177</a>
         </div>
         <div>
           Address: Kronhusgatan
