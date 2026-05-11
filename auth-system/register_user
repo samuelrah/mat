@@ -1,23 +1,73 @@
-const { Pool } = require('./db');
+require('dotenv').config();
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const cors = require('cors');
+const pool = require('./db');
+
 const app = express();
 
 app.use(express.json());
 app.use(cors());
 
-app.post('/api/auth/register', async (req, res) => {
-const { password } = req.body;
-try {
-const salt = await bcrypt.genSalt(10);
-const hashedPassword = await bcrypt.hash(password, salt);
-const result = await pool.query(
-'INSERT INTO users (passwords) VALUES ($1) RETURNING *',
-[hashedPassword]
-);
-res.status(201).json(result.rows[0]);
-} catch (err) {
-res.status(500).json({ error: err.message });
-}
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(err.status || 500).json({ error: err.message });
 });
+
+const validateEmail = (email) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
+
+app.post('/api/auth/register', async (req, res, next) => {
+  const { userName, userMail, password, confirmPassword } = req.body;
+  
+  try {
+    // Validation
+    if (!userName || !userMail || !password) {
+      return res.status(400).json({ error: 'userName, userMail, and password are required' });
+    }
+
+    if (!validateEmail(userMail)) {
+      return res.status(400).json({ error: 'Invalid email format' });
+    }
+
+    if (password !== confirmPassword) {
+      return res.status(400).json({ error: 'Passwords do not match' });
+    }
+
+    if (password.length < 8) {
+      return res.status(400).json({ error: 'Password must be at least 8 characters' });
+    }
+
+    // Check if user already exists
+    const existingUser = await pool.query(
+      'SELECT * FROM users WHERE userName = $1 OR userMail = $2',
+      [userName, userMail]
+    );
+
+    if (existingUser.rows.length > 0) {
+      return res.status(409).json({ error: 'User already exists' });
+    }
+
+    // Hash password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Insert user
+    const result = await pool.query(
+      'INSERT INTO users (userName, userMail, passwords) VALUES ($1, $2, $3) RETURNING id, userName, userMail',
+      [userName, userMail, hashedPassword]
+    );
+
+    res.status(201).json({
+      message: 'User registered successfully',
+      user: result.rows[0]
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+module.exports = app;

@@ -1,34 +1,4 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-
-export default function Admin() {
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
-}
-  useEffect(() => {
-    // Check if user is authenticated and has admin permissions
-    const userData = localStorage.getItem('user');
-    if (!userData) {
-      navigate('/login'); 
-      return;
-    }
-    
-    const user = JSON.parse(userData);
-    if (!user.isAdmin) {
-      // Redirect non-admins back to home
-      navigate('/');
-      return;
-    }
-    
-    setIsAdmin(true);
-    setLoading(false);
-  }, [navigate]);
-
-  if (loading || !isAdmin) {
-    return null; // Will redirect
-  }
-
+import React, { useState } from "react";
 
 const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3001";
 
@@ -110,7 +80,6 @@ export default function Admin() {
     }
   };
 
-
   return (
     <div className="admin-page">
       <div className="admin-header">
@@ -152,7 +121,7 @@ export default function Admin() {
             <li>Dedu — Admin</li>
             <li>jadu — Aktiv</li>
           </ul>
-           <button
+          <button
             className="admin-action"
             onClick={() => setShowCreateUserForm(!showCreateUserForm)}
           >
@@ -160,7 +129,8 @@ export default function Admin() {
           </button>
         </section>
       </div>
-       {showCreateUserForm && (
+
+      {showCreateUserForm && (
         <section className="admin-card create-user-form">
           <h3>Skapa ny användare</h3>
           <form onSubmit={handleCreateUser}>
