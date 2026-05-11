@@ -25,7 +25,8 @@ export default function Login() {
       isAdmin: adminEmails.includes(email.toLowerCase()),
     };
     localStorage.setItem('user', JSON.stringify(userData));
-    navigate('/account');
+    window.dispatchEvent(new Event('storage'));
+    navigate('/');
   };
 
   return (
@@ -89,26 +90,47 @@ export default function Login() {
                       required 
                     />
                   </div>
+                  <div className="form-group">
+                    <input
+                      name="address"
+                      type="text" 
+                      placeholder="Address" 
+                      className="form-control"
+                      required 
+                    />
+                  </div>
+                  <div className="form-group">
+                    <input
+                      name="phone"
+                      type="tel" 
+                      placeholder="Phone Number" 
+                      className="form-control"
+                    />
+                  </div>
                 </>
               )}
-              <div className="form-group">
-                <input 
-                  name="email"
-                  type="email" 
-                  placeholder="Email" 
-                  className="form-control"
-                  required 
-                />
-              </div>
-              <div className="form-group">
-                <input 
-                  name="password"
-                  type="password" 
-                  placeholder="Password" 
-                  className="form-control"
-                  required 
-                />
-              </div>
+              {!isSignUp && (
+                <>
+                  <div className="form-group">
+                    <input
+                      name="email"
+                      type="email" 
+                      placeholder="Email" 
+                      className="form-control"
+                      required 
+                    />
+                  </div>
+                  <div className="form-group">
+                    <input
+                      name="password"
+                      type="password" 
+                      placeholder="Password" 
+                      className="form-control"
+                      required 
+                    />
+                  </div>
+                </>
+              )}
               <button type="submit" className="btn btn-primary w-100">
                 {isSignUp ? 'Create Account' : 'Sign In'}
               </button>

@@ -50,6 +50,14 @@ function App() {
   React.useEffect(() => {
     const userData = localStorage.getItem('user');
     setIsAuthenticated(!!userData);
+
+    const handleStorageChange = () => {
+      const userData = localStorage.getItem('user');
+      setIsAuthenticated(!!userData);
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
   return (
@@ -76,15 +84,15 @@ function App() {
         )}
         {/* Main content */}
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
-            <Route path="/account" element={<Account />} />
-            <Route path="/gallery" element={<Gallery />} />
-          <Route path="/menu" element={<Menu />} />
-          <Route path="/cart" element={<Cart />} />
-          <Route path="/payment" element={<Payment />} />
-          <Route path="/admin" element={<Admin />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/" element={isAuthenticated ? <Home /> : <Login />} />
+          <Route path="/about" element={isAuthenticated ? <About /> : <Login />} />
+          <Route path="/account" element={isAuthenticated ? <Account /> : <Login />} />
+          <Route path="/gallery" element={isAuthenticated ? <Gallery /> : <Login />} />
+          <Route path="/menu" element={isAuthenticated ? <Menu /> : <Login />} />
+          <Route path="/cart" element={isAuthenticated ? <Cart /> : <Login />} />
+          <Route path="/payment" element={isAuthenticated ? <Payment /> : <Login />} />
+          <Route path="/admin" element={isAuthenticated ? <Admin /> : <Login />} />
         </Routes>
       </div>
     </Router>
