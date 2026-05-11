@@ -54,7 +54,7 @@ export default function Account() {
                         <div className="card-body">
                             <div className="mb-4">
                                 <h2>Account</h2>
-                                <p>Manage your profile, view purchase history and check your points.</p>
+                                <p>Manage your profile, view purchase history and check your score.</p>
                             </div>
 
                             <div className="mb-4">
@@ -85,6 +85,7 @@ export default function Account() {
                                                 className="form-control form-control-sm bg-secondary text-white border-secondary"
                                                 value={editData.name || ''}
                                                 onChange={(e) => handleInputChange('name', e.target.value)}
+                                                required
                                             />
                                         </div>
                                         <div className="mb-3">
@@ -94,6 +95,7 @@ export default function Account() {
                                                 className="form-control form-control-sm bg-secondary text-white border-secondary"
                                                 value={editData.email || ''}
                                                 onChange={(e) => handleInputChange('email', e.target.value)}
+                                                required
                                             />
                                         </div>
                                         <div className="mb-3">
@@ -103,6 +105,7 @@ export default function Account() {
                                                 className="form-control form-control-sm bg-secondary text-white border-secondary"
                                                 value={editData.address || ''}
                                                 onChange={(e) => handleInputChange('address', e.target.value)}
+                                                required
                                             />
                                         </div>
                                         <div className="mb-3">
@@ -142,7 +145,7 @@ export default function Account() {
                                         </div>
                                         <div className="mb-2">
                                             <strong>Address:</strong>
-                                            <div>{user.address || 'Stockholm, Sweden'}</div>
+                                            <div>{user.address || 'Not provided'}</div>
                                         </div>
                                         <div>
                                             <strong>Phone:</strong>
