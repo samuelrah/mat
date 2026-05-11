@@ -1,17 +1,6 @@
 ﻿import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
-const images = [
-  "1.jpg",
-  "2.jpg",
-  "3.jpg",
-  "4.jpg",
-  "5.jpg",
-  "6.jpg",
-  "7.webp",
-  "8.jpg",
-  "9.jpg",
-];
+import { galleryImages } from "./menuData";
 
 export default function Gallery() {
   const [hovered, setHovered] = useState(null);
@@ -34,7 +23,7 @@ export default function Gallery() {
         </div>
 
         <div className="row row-cols-3 g-4">
-          {images.map((image, index) => (
+          {galleryImages.map((image, index) => (
             <div className="col" key={image}>
               <div className="card h-auto shadow-sm overflow-hidden" style={{ borderRadius: 0, position: 'relative' }}>
                 <img
