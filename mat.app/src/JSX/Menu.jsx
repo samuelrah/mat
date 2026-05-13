@@ -1,5 +1,4 @@
-import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+﻿import React from "react";
 import { menuSections } from "./menuData";
 
 export default function Menu({ searchQuery = "" }) {

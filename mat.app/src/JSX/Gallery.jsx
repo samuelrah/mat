@@ -1,24 +1,15 @@
-﻿import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+﻿import React, { useState } from "react";
 import { galleryImages } from "./menuData";
 
 export default function Gallery() {
   const [hovered, setHovered] = useState(null);
   const [zoomed, setZoomed] = useState(null);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const userData = localStorage.getItem('user');
-    if (!userData) {
-      navigate('/login');
-    }
-  }, [navigate]);
 
   return (
     <div className="gallery-page" style={{ minHeight: "100vh", paddingTop: "80px" }}>
       <div className="container-fluid py-4 px-5">
         <div className="gallery-header mb-4">
-          <h2 className="text-white" style={{'margin-top': '100px', 'text-align': 'left'}}>Galleri</h2>
+          <h2 className="text-white" style={{marginTop: '50px', textAlign: 'left'}}>Galleri</h2>
           <p className="text-white-50">Bilder på mat och dryck från vår galleri.</p>
         </div>
 
