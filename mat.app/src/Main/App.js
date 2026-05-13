@@ -1,5 +1,4 @@
-
-import React from "react";
+﻿import React from "react";
 import { BrowserRouter as Router, Routes, Route, useNavigate, Link } from "react-router-dom";
 import Home from "../JSX/Home";
 import About from "../JSX/About";
@@ -63,35 +62,31 @@ function App() {
   return (
     <Router>
       <div className="app">
-        {isAuthenticated && (
-          <>
-            {/* Burger ikon */}
-            <div className="burger" onClick={() => setMenuOpen(true)}>
-              ☰
-            </div>
-            {/* Sök + profil */}
-            <div className="top-right">
-              <input type="text" placeholder="sök" className="search" />
-              <Link className="profile" to="/account" />
-            </div>
-              {/* Sidebar */}
-            <Sidebar menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
-            {/* Overlay */}
-            {menuOpen && (
-              <div className="overlay" onClick={() => setMenuOpen(false)}></div>
-            )}
-          </>
+        <div className="burger" onClick={() => setMenuOpen(true)}>
+          ☰
+        </div>
+        <div className="top-right">
+          <input type="text" placeholder="sök" className="search" />
+          {isAuthenticated ? (
+            <Link className="profile" to="/account" />
+          ) : (
+            <Link className="profile-login" to="/login">Logga in</Link>
+          )}
+        </div>
+        <Sidebar menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
+        {menuOpen && (
+          <div className="overlay" onClick={() => setMenuOpen(false)}></div>
         )}
-        {/* Main content */}
+
         <Routes>
           <Route path="/login" element={<Login />} />
-          <Route path="/" element={isAuthenticated ? <Home /> : <Login />} />
-          <Route path="/about" element={isAuthenticated ? <About /> : <Login />} />
-          <Route path="/account" element={isAuthenticated ? <Account /> : <Login />} />
-          <Route path="/gallery" element={isAuthenticated ? <Gallery /> : <Login />} />
-          <Route path="/menu" element={isAuthenticated ? <Menu /> : <Login />} />
-          <Route path="/cart" element={isAuthenticated ? <Cart /> : <Login />} />
-          <Route path="/payment" element={isAuthenticated ? <Payment /> : <Login />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/account" element={<Account />} />
+          <Route path="/gallery" element={<Gallery />} />
+          <Route path="/menu" element={<Menu />} />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/payment" element={<Payment />} />
           <Route path="/admin" element={isAuthenticated ? <Admin /> : <Login />} />
         </Routes>
       </div>
@@ -99,4 +94,4 @@ function App() {
   );
 }
 
-export default App; 
+export default App;

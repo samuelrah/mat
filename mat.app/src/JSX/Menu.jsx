@@ -1,17 +1,7 @@
-import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+﻿import React from "react";
 import { menuSections } from "./menuData";
 
 export default function Menu() {
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const userData = localStorage.getItem("user");
-    if (!userData) {
-      navigate("/login");
-    }
-  }, [navigate]);
-
   return (
     <div className="menu-page" style={{ minHeight: "100vh", paddingTop: "80px" }}>
       <div className="container-fluid py-4 px-5">
