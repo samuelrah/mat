@@ -16,12 +16,32 @@ function Sidebar({ menuOpen, setMenuOpen }) {
   const navigate = useNavigate();
   const [isAdmin, setIsAdmin] = React.useState(false);
 
-  React.useEffect(() => {
+  const updateAdminStatus = () => {
     const userData = localStorage.getItem('user');
     if (userData) {
       const user = JSON.parse(userData);
       setIsAdmin(user.isAdmin || false);
     }
+  };
+
+  React.useEffect(() => {
+    updateAdminStatus();
+
+    const handleStorageChange = () => {
+      updateAdminStatus();
+    };
+
+    const handleUserLogin = () => {
+      updateAdminStatus();
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('userLogin', handleUserLogin);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('userLogin', handleUserLogin);
+    };
   }, []);
 
   return (
@@ -42,52 +62,94 @@ function Sidebar({ menuOpen, setMenuOpen }) {
   );
 }
 
+function SearchBar({ searchQuery, setSearchQuery }) {
+  const navigate = useNavigate();
+
+  const handleSearchChange = (event) => {
+    const value = event.target.value;
+    setSearchQuery(value);
+    navigate('/menu');
+  };
+
+  return (
+    <input
+      type="text"
+      placeholder="search"
+      className="search"
+      value={searchQuery}
+      onChange={handleSearchChange}
+    />
+  );
+}
+
 function App() {
   const [menuOpen, setMenuOpen] = React.useState(false);
   const [isAuthenticated, setIsAuthenticated] = React.useState(false);
+  const [isAdmin, setIsAdmin] = React.useState(false);
+  const [searchQuery, setSearchQuery] = React.useState('');
 
-  React.useEffect(() => {
+  const updateAuthStatus = () => {
     const userData = localStorage.getItem('user');
     setIsAuthenticated(!!userData);
+    if (userData) {
+      const user = JSON.parse(userData);
+      setIsAdmin(user.isAdmin || false);
+    }
+  };
+
+  React.useEffect(() => {
+    updateAuthStatus();
 
     const handleStorageChange = () => {
-      const userData = localStorage.getItem('user');
-      setIsAuthenticated(!!userData);
+      updateAuthStatus();
+    };
+
+    const handleUserLogin = () => {
+      updateAuthStatus();
     };
 
     window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
+    window.addEventListener('userLogin', handleUserLogin);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('userLogin', handleUserLogin);
+    };
   }, []);
 
   return (
     <Router>
       <div className="app">
-        <div className="burger" onClick={() => setMenuOpen(true)}>
-          ☰
-        </div>
-        <div className="top-right">
-          <input type="text" placeholder="sök" className="search" />
-          {isAuthenticated ? (
-            <Link className="profile" to="/account" />
-          ) : (
-            <Link className="profile-login" to="/login">Logga in</Link>
-          )}
-        </div>
-        <Sidebar menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
-        {menuOpen && (
-          <div className="overlay" onClick={() => setMenuOpen(false)}></div>
+        {isAuthenticated && (
+          <>
+            {/* Burger ikon */}
+            <div className="burger" onClick={() => setMenuOpen(true)}>
+              ☰
+            </div>
+            {/* Sök + profil */}
+            <div className="top-right">
+              <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+              <Link className="profile" to="/account" />
+            </div>
+              {/* Sidebar */}
+            <Sidebar menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
+            {/* Overlay */}
+            {menuOpen && (
+              <div className="overlay" onClick={() => setMenuOpen(false)}></div>
+            )}
+          </>
         )}
 
         <Routes>
           <Route path="/login" element={<Login />} />
-          <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/account" element={<Account />} />
-          <Route path="/gallery" element={<Gallery />} />
-          <Route path="/menu" element={<Menu />} />
-          <Route path="/cart" element={<Cart />} />
-          <Route path="/payment" element={<Payment />} />
-          <Route path="/admin" element={isAuthenticated ? <Admin /> : <Login />} />
+          <Route path="/" element={isAuthenticated ? <Home /> : <Login />} />
+          <Route path="/about" element={isAuthenticated ? <About /> : <Login />} />
+          <Route path="/account" element={isAuthenticated ? <Account /> : <Login />} />
+          <Route path="/gallery" element={isAuthenticated ? <Gallery /> : <Login />} />
+          <Route path="/menu" element={isAuthenticated ? <Menu /> : <Login />} />
+          <Route path="/cart" element={isAuthenticated ? <Cart /> : <Login />} />
+          <Route path="/payment" element={isAuthenticated ? <Payment /> : <Login />} />
+          <Route path="/admin" element={isAuthenticated && isAdmin ? <Admin /> : <Login />} />
         </Routes>
       </div>
     </Router>
