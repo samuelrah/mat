@@ -16,12 +16,32 @@ function Sidebar({ menuOpen, setMenuOpen }) {
   const navigate = useNavigate();
   const [isAdmin, setIsAdmin] = React.useState(false);
 
-  React.useEffect(() => {
+  const updateAdminStatus = () => {
     const userData = localStorage.getItem('user');
     if (userData) {
       const user = JSON.parse(userData);
       setIsAdmin(user.isAdmin || false);
     }
+  };
+
+  React.useEffect(() => {
+    updateAdminStatus();
+
+    const handleStorageChange = () => {
+      updateAdminStatus();
+    };
+
+    const handleUserLogin = () => {
+      updateAdminStatus();
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('userLogin', handleUserLogin);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('userLogin', handleUserLogin);
+    };
   }, []);
 
   return (
@@ -65,19 +85,36 @@ function SearchBar({ searchQuery, setSearchQuery }) {
 function App() {
   const [menuOpen, setMenuOpen] = React.useState(false);
   const [isAuthenticated, setIsAuthenticated] = React.useState(false);
-  const [searchQuery, setSearchQuery] = React.useState("");
+  const [isAdmin, setIsAdmin] = React.useState(false);
+  const [searchQuery, setSearchQuery] = React.useState('');
 
-  React.useEffect(() => {
+  const updateAuthStatus = () => {
     const userData = localStorage.getItem('user');
     setIsAuthenticated(!!userData);
+    if (userData) {
+      const user = JSON.parse(userData);
+      setIsAdmin(user.isAdmin || false);
+    }
+  };
+
+  React.useEffect(() => {
+    updateAuthStatus();
 
     const handleStorageChange = () => {
-      const userData = localStorage.getItem('user');
-      setIsAuthenticated(!!userData);
+      updateAuthStatus();
+    };
+
+    const handleUserLogin = () => {
+      updateAuthStatus();
     };
 
     window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
+    window.addEventListener('userLogin', handleUserLogin);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('userLogin', handleUserLogin);
+    };
   }, []);
 
   return (
@@ -105,14 +142,14 @@ function App() {
 
         <Routes>
           <Route path="/login" element={<Login />} />
-          <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/account" element={<Account />} />
-          <Route path="/gallery" element={<Gallery />} />
-          <Route path="/menu" element={<Menu />} />
-          <Route path="/cart" element={<Cart />} />
-          <Route path="/payment" element={<Payment />} />
-          <Route path="/admin" element={isAuthenticated ? <Admin /> : <Login />} />
+          <Route path="/" element={isAuthenticated ? <Home /> : <Login />} />
+          <Route path="/about" element={isAuthenticated ? <About /> : <Login />} />
+          <Route path="/account" element={isAuthenticated ? <Account /> : <Login />} />
+          <Route path="/gallery" element={isAuthenticated ? <Gallery /> : <Login />} />
+          <Route path="/menu" element={isAuthenticated ? <Menu /> : <Login />} />
+          <Route path="/cart" element={isAuthenticated ? <Cart /> : <Login />} />
+          <Route path="/payment" element={isAuthenticated ? <Payment /> : <Login />} />
+          <Route path="/admin" element={isAuthenticated && isAdmin ? <Admin /> : <Login />} />
         </Routes>
       </div>
     </Router>

@@ -73,6 +73,17 @@ app.delete('/api/users/:userName', async (req, res, next) => {
   }
 });
 
+// LOGIN user
+app.post('/api/login', async (req, res, next) => {
+  try {
+    const { userName, password } = req.body;
+    const user = await userModel.loginUser(userName, password);
+    res.status(200).json(user);
+  } catch (err) {
+    next(err);
+  }
+});
+
 // ==================== DISHES ROUTES ====================
 
 // GET all dishes

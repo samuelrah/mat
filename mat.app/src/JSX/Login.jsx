@@ -1,32 +1,115 @@
 import { React, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3001";
+
 export default function Login() {
   const [isSignUp, setIsSignUp] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  // Admin email list for authorization
-  const adminEmails = ['admin@emberandoak.com', 'dedu@example.com'];
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const email = e.target.email.value;
-    const username = e.target.username?.value || '';
-    const firstName = e.target.firstName?.value || '';
-    const lastName = e.target.lastName?.value || '';
+    setError('');
+    setLoading(true);
 
-    const userData = {
-      email,
-      username,
-      firstName,
-      lastName,
-      name: isSignUp ? `${firstName} ${lastName}`.trim() || email.split('@')[0] : email.split('@')[0] || 'Existing User',
-      points: 5,
-      isAdmin: adminEmails.includes(email.toLowerCase()),
-    };
-    localStorage.setItem('user', JSON.stringify(userData));
-    window.dispatchEvent(new Event('storage'));
-    navigate('/');
+    try {
+      if (isSignUp) {
+        // Handle signup
+        const username = e.target.username.value;
+        const firstName = e.target.firstName.value;
+        const lastName = e.target.lastName.value;
+        const email = e.target.email.value;
+        const password = e.target.password.value;
+        const confirmPassword = e.target.confirmPassword.value;
+        const address = e.target.address.value;
+        const phone = e.target.phone.value || '';
+
+        if (password !== confirmPassword) {
+          setError('Passwords do not match');
+          setLoading(false);
+          return;
+        }
+
+        if (password.length < 8) {
+          setError('Password must be at least 8 characters');
+          setLoading(false);
+          return;
+        }
+
+        const response = await fetch(`${API_URL}/api/users`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userName: username,
+            firstName,
+            lastName,
+            userMail: email,
+            password,
+            userAdress: address,
+            phoneNum: phone,
+            user_is_premium: false,
+            user_is_admin: false,
+          }),
+        });
+
+        if (!response.ok) {
+          const data = await response.json();
+          throw new Error(data.error || 'Sign up failed');
+        }
+
+        const newUser = await response.json();
+        const userData = {
+          userName: newUser.userName,
+          email: newUser.userMail,
+          firstName: newUser.firstName,
+          lastName: newUser.lastName,
+          name: `${newUser.firstName} ${newUser.lastName}`,
+          points: 5,
+          isAdmin: newUser.user_is_admin || false,
+        };
+        localStorage.setItem('user', JSON.stringify(userData));
+        window.dispatchEvent(new Event('userLogin'));
+        navigate('/');
+      } else {
+        // Handle login
+        const username = e.target.username.value;
+        const password = e.target.password.value;
+
+        const response = await fetch(`${API_URL}/api/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userName: username,
+            password,
+          }),
+        });
+
+        if (!response.ok) {
+          const data = await response.json();
+          throw new Error(data.error || 'Login failed');
+        }
+
+        const user = await response.json();
+        const userData = {
+          userName: user.userName,
+          email: user.userMail,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          name: `${user.firstName} ${user.lastName}`,
+          points: 5,
+          isAdmin: user.user_is_admin || false,
+        };
+        localStorage.setItem('user', JSON.stringify(userData));
+        window.dispatchEvent(new Event('userLogin'));
+        navigate('/');
+      }
+    } catch (err) {
+      setError(err.message || 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -92,6 +175,15 @@ export default function Login() {
                   </div>
                   <div className="form-group">
                     <input
+                      name="confirmPassword"
+                      type="password" 
+                      placeholder="Confirm Password" 
+                      className="form-control"
+                      required 
+                    />
+                  </div>
+                  <div className="form-group">
+                    <input
                       name="address"
                       type="text" 
                       placeholder="Address" 
@@ -113,9 +205,9 @@ export default function Login() {
                 <>
                   <div className="form-group">
                     <input
-                      name="email"
-                      type="email" 
-                      placeholder="Email" 
+                      name="username"
+                      type="text" 
+                      placeholder="Username" 
                       className="form-control"
                       required 
                     />
@@ -131,8 +223,9 @@ export default function Login() {
                   </div>
                 </>
               )}
-              <button type="submit" className="btn btn-primary w-100">
-                {isSignUp ? 'Create Account' : 'Sign In'}
+              {error && <div style={{ color: 'red', marginBottom: '10px', fontSize: '14px' }}>{error}</div>}
+              <button type="submit" className="btn btn-primary w-100" disabled={loading}>
+                {loading ? 'Loading...' : (isSignUp ? 'Create Account' : 'Sign In')}
               </button>
             </form>
 

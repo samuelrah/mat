@@ -130,12 +130,39 @@ const updateUser = async (userName, body) => {
   }
 };
 
+const loginUser = async (userName, password) => {
+  if (!userName || !password) {
+    throw new Error('userName och password är obligatoriska');
+  }
+
+  try {
+    const result = await pool.query('SELECT * FROM public.Users WHERE userName = $1', [userName]);
+    if (result.rows.length === 0) {
+      throw new Error('Inkorrekta användaruppgifter');
+    }
+
+    const user = result.rows[0];
+    const isPasswordValid = await bcrypt.compare(password, user.passwords);
+
+    if (!isPasswordValid) {
+      throw new Error('Inkorrekta användaruppgifter');
+    }
+
+    // Return user without password
+    const { passwords, ...userWithoutPassword } = user;
+    return userWithoutPassword;
+  } catch (error) {
+    throw new Error(`Login failed: ${error.message}`);
+  }
+};
+
 module.exports = {
   getUser,
   getUserByName,
   createUser,
   deleteUser,
-  updateUser
+  updateUser,
+  loginUser
 };
 
 
