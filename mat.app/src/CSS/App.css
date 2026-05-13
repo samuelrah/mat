@@ -112,40 +112,6 @@
   flex: 0 0 auto;
 }
 
-.menu-scroll-container {
-  position: relative;
-}
-
-.scroll-arrow {
-  position: absolute;
-  top: 120px;
-  background: rgba(255, 255, 255, 0.9);
-  color: #333;
-  border: 2px solid rgba(255, 255, 255, 0.5);
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  font-size: 20px;
-  cursor: pointer;
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.3s, border-color 0.3s;
-}
-
-.scroll-arrow:hover {
-  background: rgba(255, 255, 255, 1);
-  border-color: rgba(255, 255, 255, 1);
-}
-
-.scroll-arrow-left {
-  left: -20px;
-}
-
-.scroll-arrow-right {
-  right: -20px;
-}
 
 .menu-card .card-body p {
   color: rgba(255, 255, 255, 0.82);
