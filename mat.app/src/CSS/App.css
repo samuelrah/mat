@@ -360,3 +360,20 @@
   border: 1px solid #f44336;
   color: #ef9a9a;
 }
+
+:root {
+--logo: #3DBB3D;
+--gray: #777777;
+--black: #070707;
+--green: #7ED386;
+--aqua: #3FB6A8;
+--white: #FFFFFF;
+--hulu: 'Nunito Sans', sans-serif;
+--heading: 'Montserrat', sans-serif;
+--body: 'Roboto', sans-serif;
+}
+body {
+background: linear-gradient(to right, var(--aqua), var(--green));
+font-family: var(--body);
+}
+
