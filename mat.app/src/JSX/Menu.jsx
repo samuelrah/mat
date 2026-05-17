@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+﻿import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { restaurants } from "./menuData";
 
@@ -7,11 +7,17 @@ export default function Menu() {
   const [selectedRestaurant, setSelectedRestaurant] = useState(restaurants[0]);
 
   const parsePrice = (price) => {
-    const parsed = price.toString().replace(/[^0-9,\.]/g, "").replace(",", ".");
+    const parsed = price.toString().replace(/[^0-9,.]/g, "").replace(",", ".");
     return Number(parsed) || 0;
   };
 
   const addToCart = (item, restaurantName) => {
+    const userData = localStorage.getItem("user");
+    if (!userData) {
+      navigate("/login");
+      return;
+    }
+
     const cart = JSON.parse(localStorage.getItem("cart") || "[]");
     const unitPrice = parsePrice(item.price);
     const existingIndex = cart.findIndex(
@@ -35,18 +41,9 @@ export default function Menu() {
     alert(`${item.name} lades till i kundvagnen.`);
   };
 
-  useEffect(() => {
-    const userData = localStorage.getItem("user");
-    if (!userData) {
-      navigate("/login");
-    }
-  }, [navigate]);
-
   return (
     <div className="menu-page" style={{ minHeight: "100vh", paddingTop: "80px" }}>
       <div className="container-fluid py-4 px-5">
-
-
         <div className="row g-4">
           <div className="col-12 col-md-3">
             <div className="menu-filter-card restaurant-card">

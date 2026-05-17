@@ -20,14 +20,16 @@ export default function Cart() {
 
   return (
     <div className="container py-4" style={{ color: "white" }}>
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <button type="button" className="btn btn-outline-light btn-sm" onClick={clearCart}>
-          Töm kundvagn
-        </button>
-      </div>
+      {cartItems.length > 0 && (
+        <div className="d-flex justify-content-between align-items-center mb-4">
+          <button type="button" className="btn btn-outline-light btn-sm" onClick={clearCart}>
+            Töm kundvagn
+          </button>
+        </div>
+      )}
 
       {cartItems.length === 0 ? (
-        <div className="d-flex flex-column justify-content-center align-items-center" style={{ height: "60vh" }}>
+        <div className="d-flex flex-column justify-content-center align-items-center text-center" style={{ minHeight: "100vh" }}>
           <h5>Kundvagn</h5>
           <p>Din kundvagn är tom.</p>
         </div>
