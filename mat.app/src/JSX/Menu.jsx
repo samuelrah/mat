@@ -2,15 +2,18 @@
 import { useNavigate } from "react-router-dom";
 import { restaurants } from "./menuData";
 
+/* Menu-komponenten visar restaurangmenyer och lägger till artiklar i kundvagnen. */
 export default function Menu() {
   const navigate = useNavigate();
   const [selectedRestaurant, setSelectedRestaurant] = useState(restaurants[0]);
 
+  /* Omvandlar prissträng till ett numeriskt värde för beräkningar. */
   const parsePrice = (price) => {
     const parsed = price.toString().replace(/[^0-9,.]/g, "").replace(",", ".");
     return Number(parsed) || 0;
   };
 
+  /* Lägger till en vald produkt i kundvagnen i localStorage. */
   const addToCart = (item, restaurantName) => {
     const userData = localStorage.getItem("user");
     if (!userData) {
@@ -41,6 +44,17 @@ export default function Menu() {
     alert(`${item.name} lades till i kundvagnen.`);
   };
 
+<<<<<<< HEAD
+=======
+  /* Redirectar till inloggning om användaren inte är inloggad. */
+  useEffect(() => {
+    const userData = localStorage.getItem("user");
+    if (!userData) {
+      navigate("/login");
+    }
+  }, [navigate]);
+
+>>>>>>> 707a93243d14cef0ee772867e0bcb6c7c2fb3471
   return (
     <div className="menu-page" style={{ minHeight: "100vh", paddingTop: "80px" }}>
       <div className="container-fluid py-4 px-5">

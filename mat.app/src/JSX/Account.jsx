@@ -1,6 +1,7 @@
 import { React, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
+/* Account-komponenten visar användarprofil, redigeringsläge och loggutloggning. */
 export default function Account() { 
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
@@ -22,15 +23,18 @@ export default function Account() {
     }
   }, [navigate]);
 
+  /* Aktiverar redigeringsläge för kontoinformation. */
   const handleEdit = () => {
     setIsEditMode(true);
   };
 
+  /* Återställer edit-formuläret till användarens sparade värden. */
   const handleCancel = () => {
     setEditData(user);
     setIsEditMode(false);
   };
 
+  /* Sparar ändrade kontouppgifter till localStorage och stänger redigeringsläge. */
   const handleSave = () => {
     const updatedUser = { ...user, ...editData };
     setUser(updatedUser);
@@ -38,6 +42,7 @@ export default function Account() {
     setIsEditMode(false);
   };
 
+  /* Uppdaterar den lokala redigeringsdata när användaren ändrar ett fält. */
   const handleInputChange = (field, value) => {
     setEditData(prev => ({ ...prev, [field]: value }));
   };

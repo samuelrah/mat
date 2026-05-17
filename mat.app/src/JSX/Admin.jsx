@@ -2,6 +2,7 @@ import React, { useState } from "react";
 
 const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3001";
 
+/* Admin-komponenten visar adminstatistik och användarhanteringsverktyg. */
 export default function Admin() {
   const [showCreateUserForm, setShowCreateUserForm] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -19,6 +20,7 @@ export default function Admin() {
     user_is_admin: false,
   });
 
+  /* Uppdaterar formulärvärden för att skapa en ny användare. */
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
@@ -27,6 +29,7 @@ export default function Admin() {
     }));
   };
 
+  /* Skapar en ny användare via API och visar statusmeddelanden. */
   const handleCreateUser = async (e) => {
     e.preventDefault();
     setLoading(true);

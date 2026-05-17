@@ -1,8 +1,10 @@
 ﻿import React, { useEffect, useState } from "react";
 
+/* Cart-komponenten visar innehållet i kundvagnen och beräknar totalsumma. */
 export default function Cart() {
   const [cartItems, setCartItems] = useState([]);
 
+  /* Hämtar sparade kundvagnsdata från localStorage när komponenten laddas. */
   useEffect(() => {
     const savedCart = JSON.parse(localStorage.getItem("cart") || "[]");
     setCartItems(savedCart);
@@ -13,6 +15,7 @@ export default function Cart() {
     0
   );
 
+  /* Rensar kundvagnen både i UI och i localStorage. */
   const clearCart = () => {
     localStorage.removeItem("cart");
     setCartItems([]);

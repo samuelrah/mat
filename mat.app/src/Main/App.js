@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import { BrowserRouter as Router, Routes, Route, useNavigate, Link } from "react-router-dom";
 import Home from "../JSX/Home";
 import About from "../JSX/About";
@@ -12,6 +12,8 @@ import Admin from "../JSX/Admin";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../CSS/App.css";
 
+/* Sidebar-komponenten visar navigationsmenyn och styr om admin-länken ska visas.
+   Den lyssnar också på lokal lagring och användarinloggnings-händelser för att uppdatera rollen. */
 function Sidebar({ menuOpen, setMenuOpen }) {
   const navigate = useNavigate();
   const [isAdmin, setIsAdmin] = React.useState(false);
@@ -62,6 +64,7 @@ function Sidebar({ menuOpen, setMenuOpen }) {
   );
 }
 
+/* SearchBar-komponenten hanterar sökfältets text och navigerar till menysidan när användaren skriver. */
 function SearchBar({ searchQuery, setSearchQuery }) {
   const navigate = useNavigate();
 
@@ -82,12 +85,14 @@ function SearchBar({ searchQuery, setSearchQuery }) {
   );
 }
 
+/* App är huvudkomponenten som hanterar global status för menyer, autentisering och routing i appen. */
 function App() {
   const [menuOpen, setMenuOpen] = React.useState(false);
   const [isAuthenticated, setIsAuthenticated] = React.useState(false);
   const [isAdmin, setIsAdmin] = React.useState(false);
   const [searchQuery, setSearchQuery] = React.useState('');
 
+  /* Uppdatera inloggningsstatusen genom att läsa användardata från localStorage. */
   const updateAuthStatus = () => {
     const userData = localStorage.getItem('user');
     setIsAuthenticated(!!userData);

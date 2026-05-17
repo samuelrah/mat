@@ -1,6 +1,7 @@
 ﻿import React from "react";
 import { useNavigate } from "react-router-dom";
 
+/* Home-komponenten visar startsidan och navigerar till menyn via knapp. */
 export default function Home() {
   const navigate = useNavigate();
 

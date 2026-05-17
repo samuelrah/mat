@@ -3,12 +3,14 @@ import { useNavigate } from 'react-router-dom';
 
 const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3001";
 
+/* Login-komponenten hanterar både inloggning och registrering med API-anrop. */
 export default function Login() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
+  /* Hanterar formulärets inlämning för inloggning eller registrering. */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
