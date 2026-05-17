@@ -1,5 +1,6 @@
 ﻿import React from "react";
 
+/* About-komponenten visar information om restaurangen och kontaktuppgifter. */
 export default function About() {
   return (
     <div className="about-page d-flex flex-column" style={{minHeight: '100vh', color: 'white', position: 'relative'}}>

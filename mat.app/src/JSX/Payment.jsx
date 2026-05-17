@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 
+/* Payment-komponenten visar betalningssektionen och växlar mellan flikar. */
 export default function Dashboard() {
   const [activeSection, setActiveSection] = useState("payment");
 
+  /* Väljer vilken sektion som ska visas när användaren klickar i menyn. */
   const handleClick = (section) => {
     setActiveSection(section);
   };

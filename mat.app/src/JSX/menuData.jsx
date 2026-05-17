@@ -1,3 +1,4 @@
+/* Statisk data för galleri- och restaurangmenyer. */
 export const galleryImages = [
   "1.jpg",
   "2.jpg",

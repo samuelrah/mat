@@ -1,6 +1,7 @@
 ﻿import React, { useState } from "react";
 import { galleryImages } from "./menuData";
 
+/* Gallery-komponenten visar ett klickbart galleriflöde med hover- och zoom-effekter. */
 export default function Gallery() {
   const [hovered, setHovered] = useState(null);
   const [zoomed, setZoomed] = useState(null);
