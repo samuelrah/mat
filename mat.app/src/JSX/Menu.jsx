@@ -6,6 +6,35 @@ export default function Menu() {
   const navigate = useNavigate();
   const [selectedRestaurant, setSelectedRestaurant] = useState(restaurants[0]);
 
+  const parsePrice = (price) => {
+    const parsed = price.toString().replace(/[^0-9,\.]/g, "").replace(",", ".");
+    return Number(parsed) || 0;
+  };
+
+  const addToCart = (item, restaurantName) => {
+    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    const unitPrice = parsePrice(item.price);
+    const existingIndex = cart.findIndex(
+      (cartItem) => cartItem.name === item.name && cartItem.restaurantName === restaurantName
+    );
+
+    if (existingIndex >= 0) {
+      cart[existingIndex].quantity += 1;
+      cart[existingIndex].totalPrice = cart[existingIndex].quantity * cart[existingIndex].unitPrice;
+    } else {
+      cart.push({
+        ...item,
+        restaurantName,
+        quantity: 1,
+        unitPrice,
+        totalPrice: unitPrice,
+      });
+    }
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+    alert(`${item.name} lades till i kundvagnen.`);
+  };
+
   useEffect(() => {
     const userData = localStorage.getItem("user");
     if (!userData) {
@@ -16,10 +45,7 @@ export default function Menu() {
   return (
     <div className="menu-page" style={{ minHeight: "100vh", paddingTop: "80px" }}>
       <div className="container-fluid py-4 px-5">
-        <div className="menu-header mb-4">
-          <h2>Välj restaurang</h2>
-          <p>Klicka på en restaurang i menyn till vänster för att se dess meny.</p>
-        </div>
+
 
         <div className="row g-4">
           <div className="col-12 col-md-3">
@@ -53,7 +79,7 @@ export default function Menu() {
                 <h3 className="menu-section-title">{section.title}</h3>
                 <div className="menu-items-scroll">
                   {section.items.map((item) => (
-                    <div className="menu-scroll-item" key={item.name}>
+                    <div className="menu-scroll-item" key={`${item.name}-${section.title}`}>
                       <div className="menu-card card h-100 shadow-sm overflow-hidden">
                         <img
                           src={process.env.PUBLIC_URL + "/MAT-IMAGES/" + item.image}
@@ -64,8 +90,15 @@ export default function Menu() {
                           <h5>{item.name}</h5>
                           <p className="menu-card-text">{item.description}</p>
                         </div>
-                        <div className="card-footer menu-card-footer">
+                        <div className="card-footer menu-card-footer d-flex justify-content-between align-items-center">
                           <span>{item.price}</span>
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-success"
+                            onClick={() => addToCart(item, selectedRestaurant.name)}
+                          >
+                            Lägg till
+                          </button>
                         </div>
                       </div>
                     </div>
