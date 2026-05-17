@@ -44,17 +44,17 @@ export default function Menu() {
     alert(`${item.name} lades till i kundvagnen.`);
   };
 
-<<<<<<< HEAD
-=======
+// <<<<<<< HEAD
+// =======
   /* Redirectar till inloggning om användaren inte är inloggad. */
-  useEffect(() => {
-    const userData = localStorage.getItem("user");
-    if (!userData) {
-      navigate("/login");
-    }
-  }, [navigate]);
+//   useEffect(() => {
+//     const userData = localStorage.getItem("user");
+//     if (!userData) {
+//       navigate("/login");
+//     }
+//   }, [navigate]);
 
->>>>>>> 707a93243d14cef0ee772867e0bcb6c7c2fb3471
+// // >>>>>>> 707a93243d14cef0ee772867e0bcb6c7c2fb3471
   return (
     <div className="menu-page" style={{ minHeight: "100vh", paddingTop: "80px" }}>
       <div className="container-fluid py-4 px-5">
