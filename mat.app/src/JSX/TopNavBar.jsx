@@ -22,16 +22,16 @@ function TopNavBar({ menuOpen, setMenuOpen, searchQuery, setSearchQuery }) {
         ☰
       </button>
 
-      {/* Logo/Brand Name
-      <div className="nav-brand">
-        <h1 className="brand-text">Ember and Oak</h1>
-      </div> */}
 
-    <div className="nav-logo">
-      <button type="button" className="nav-logo-button">
-        <img src={Logo} alt="logo" style={{ height: '50px', width: '50px' }} />
-      </button>
-    </div>
+        <img 
+        src={Logo} 
+        alt="logo" 
+        style={{ 
+          height: '90px', 
+          width: '90px', 
+          borderRadius: '100%', 
+          justifyContent: "center"
+          }} />
 
       {/* Search and Profile */}
       <div className="nav-right">
