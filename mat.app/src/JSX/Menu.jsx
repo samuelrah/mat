@@ -197,7 +197,7 @@ export default function Menu() {
                   {selectedRestaurant.sections.flatMap((section) =>
                     section.items
                       .filter((item) =>
-                        (item.name + ' ' + item.description)
+                        (section.title + ' ' + item.name + ' ' + item.description)
                           .toLowerCase()
                           .includes(queryParam.toLowerCase())
                       )
