@@ -71,7 +71,8 @@ function SearchBar({ searchQuery, setSearchQuery }) {
   const handleSearchChange = (event) => {
     const value = event.target.value;
     setSearchQuery(value);
-    navigate('/menu');
+    // Navigate to /menu with query param so the Menu page can read/filter results
+    navigate(`/menu?q=${encodeURIComponent(value)}`);
   };
 
   return (
