@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { restaurants } from "./menuData";
 
 function ScrollableMenuSection({
@@ -110,6 +110,9 @@ function ScrollableMenuSection({
 
 export default function Menu() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const queryParam = params.get('q') || '';
   const [selectedRestaurant, setSelectedRestaurant] = useState(restaurants[0]);
   const [quantities, setQuantities] = useState({});
 
@@ -186,21 +189,87 @@ export default function Menu() {
           </div>
 
           <div className="col-12 col-md-9">
-            <div className="menu-section mb-4">
-              <h3 className="menu-section-title">{selectedRestaurant.name}</h3>
-              <p className="menu-card-text">Här är menyn för {selectedRestaurant.name}.</p>
-            </div>
+            {/* If a search query exists, show filtered results across sections */}
+            {queryParam ? (
+              <div className="menu-section mb-4">
+                <h3 className="menu-section-title">Sökresultat för "{queryParam}"</h3>
+                <div className="menu-items-scroll">
+                  {selectedRestaurant.sections.flatMap((section) =>
+                    section.items
+                      .filter((item) =>
+                        (section.title + ' ' + item.name + ' ' + item.description)
+                          .toLowerCase()
+                          .includes(queryParam.toLowerCase())
+                      )
+                      .map((item) => (
+                        <div className="menu-scroll-item" key={`${item.name}-${section.title}`}>
+                          <div className="menu-card card h-100 shadow-sm overflow-hidden">
+                            <img
+                              src={process.env.PUBLIC_URL + "/MAT-IMAGES/" + item.image}
+                              alt={item.name}
+                              className="menu-card-img-top"
+                            />
+                            <div className="card-body">
+                              <h5>{item.name}</h5>
+                              <p className="menu-card-text">{item.description}</p>
+                            </div>
+                            <div className="card-footer menu-card-footer d-flex justify-content-between align-items-center">
+                              <span>{item.price}</span>
+                              <button
+                                type="button"
+                                className="btn btn-sm btn-success"
+                                onClick={() => addToCart(item, selectedRestaurant.name)}
+                              >
+                                Lägg till
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                  )}
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="menu-section mb-4">
+                  <h3 className="menu-section-title">{selectedRestaurant.name}</h3>
+                  <p className="menu-card-text">Här är menyn för {selectedRestaurant.name}.</p>
+                </div>
 
-            {selectedRestaurant.sections.map((section) => (
-              <ScrollableMenuSection
-                key={section.title}
-                section={section}
-                selectedRestaurant={selectedRestaurant}
-                quantities={quantities}
-                handleQuantityChange={handleQuantityChange}
-                addToCart={addToCart}
-              />
-            ))}
+                {selectedRestaurant.sections.map((section) => (
+                  <div className="menu-section mb-5" key={section.title}>
+                    <h3 className="menu-section-title">{section.title}</h3>
+                    <div className="menu-items-scroll">
+                      {section.items.map((item) => (
+                        <div className="menu-scroll-item" key={`${item.name}-${section.title}`}>
+                          <div className="menu-card card h-100 shadow-sm overflow-hidden">
+                            <img
+                              src={process.env.PUBLIC_URL + "/MAT-IMAGES/" + item.image}
+                              alt={item.name}
+                              className="menu-card-img-top"
+                            />
+                            <div className="card-body">
+                              <h5>{item.name}</h5>
+                              <p className="menu-card-text">{item.description}</p>
+                            </div>
+                            <div className="card-footer menu-card-footer d-flex justify-content-between align-items-center">
+                              <span>{item.price}</span>
+                              <button
+                                type="button"
+                                className="btn btn-sm btn-success"
+                                onClick={() => addToCart(item, selectedRestaurant.name)}
+                              >
+                                Lägg till
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </>
+            )}
           </div>
         </div>
       </div>
