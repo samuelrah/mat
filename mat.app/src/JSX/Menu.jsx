@@ -2,7 +2,13 @@ import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { restaurants } from "./menuData";
 
-function ScrollableMenuSection({ section }) {
+function ScrollableMenuSection({
+  section,
+  selectedRestaurant,
+  quantities,
+  handleQuantityChange,
+  addToCart,
+}) {
   const scrollRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
@@ -47,24 +53,50 @@ function ScrollableMenuSection({ section }) {
           </button>
         )}
         <div className="menu-items-scroll" ref={scrollRef}>
-          {section.items.map((item) => (
-            <div className="menu-scroll-item" key={item.name}>
-              <div className="menu-card card h-100 shadow-sm overflow-hidden">
-                <img
-                  src={process.env.PUBLIC_URL + "/MAT-IMAGES/" + item.image}
-                  alt={item.name}
-                  className="menu-card-img-top"
-                />
-                <div className="card-body">
-                  <h5>{item.name}</h5>
-                  <p className="menu-card-text">{item.description}</p>
-                </div>
-                <div className="card-footer menu-card-footer">
-                  <span>{item.price}</span>
+          {section.items.map((item) => {
+            const itemKey = `${selectedRestaurant.name}-${section.title}-${item.name}`;
+            const itemQuantity = quantities[itemKey] === undefined ? 1 : quantities[itemKey];
+            return (
+              <div className="menu-scroll-item" key={itemKey}>
+                <div className="menu-card card h-100 shadow-sm overflow-hidden">
+                  <img
+                    src={process.env.PUBLIC_URL + "/MAT-IMAGES/" + item.image}
+                    alt={item.name}
+                    className="menu-card-img-top"
+                  />
+                  <div className="card-body">
+                    <h5>{item.name}</h5>
+                    <p className="menu-card-text">{item.description}</p>
+                  </div>
+                  <div className="card-footer menu-card-footer d-flex justify-content-between align-items-center">
+                    <div>
+                      <span>{item.price}</span>
+                      <input
+                        type="number"
+                        min="1"
+                        value={itemQuantity}
+                        onChange={(e) => handleQuantityChange(itemKey, e.target.value)}
+                        onBlur={() => {
+                          if (quantities[itemKey] === "" || quantities[itemKey] === undefined) {
+                            handleQuantityChange(itemKey, "1");
+                          }
+                        }}
+                        className="form-control form-control-sm mt-2"
+                        style={{ width: "70px" }}
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      className="btn btn-sm btn-success"
+                      onClick={() => addToCart(item, selectedRestaurant.name, itemQuantity)}
+                    >
+                      Lägg till
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
         {canScrollRight && (
           <button className="scroll-arrow scroll-arrow-right" onClick={scrollRight}>
@@ -79,6 +111,7 @@ function ScrollableMenuSection({ section }) {
 export default function Menu() {
   const navigate = useNavigate();
   const [selectedRestaurant, setSelectedRestaurant] = useState(restaurants[0]);
+  const [quantities, setQuantities] = useState({});
 
   /* Omvandlar prissträng till ett numeriskt värde för beräkningar. */
   const parsePrice = (price) => {
@@ -86,14 +119,26 @@ export default function Menu() {
     return Number(parsed) || 0;
   };
 
+  /* Sparar vald kvantitet för en produkt.
+     Om användaren tar bort allt i inputfältet sparas tom sträng först,
+     sedan blir det 1 igen när fältet tappar fokus eller när produkten läggs till. */
+  const handleQuantityChange = (itemKey, value) => {
+    const quantity = value === "" ? "" : Math.max(Number(value) || 1, 1);
+    setQuantities((prev) => ({
+      ...prev,
+      [itemKey]: quantity,
+    }));
+  };
+
   /* Lägger till en vald produkt i kundvagnen i localStorage. */
-  const addToCart = (item, restaurantName) => {
+  const addToCart = (item, restaurantName, quantity = 1) => {
     const userData = localStorage.getItem("user");
     if (!userData) {
       navigate("/login");
       return;
     }
 
+    const validQuantity = Math.max(Number(quantity) || 1, 1);
     const cart = JSON.parse(localStorage.getItem("cart") || "[]");
     const unitPrice = parsePrice(item.price);
     const existingIndex = cart.findIndex(
@@ -101,33 +146,21 @@ export default function Menu() {
     );
 
     if (existingIndex >= 0) {
-      cart[existingIndex].quantity += 1;
+      cart[existingIndex].quantity += validQuantity;
       cart[existingIndex].totalPrice = cart[existingIndex].quantity * cart[existingIndex].unitPrice;
     } else {
       cart.push({
         ...item,
         restaurantName,
-        quantity: 1,
+        quantity: validQuantity,
         unitPrice,
-        totalPrice: unitPrice,
+        totalPrice: unitPrice * validQuantity,
       });
     }
 
     localStorage.setItem("cart", JSON.stringify(cart));
-    alert(`${item.name} lades till i kundvagnen.`);
+    alert(`${item.name} x${validQuantity} lades till i kundvagnen.`);
   };
-
-// <<<<<<< HEAD
-// =======
-  /* Redirectar till inloggning om användaren inte är inloggad. */
-//   useEffect(() => {
-//     const userData = localStorage.getItem("user");
-//     if (!userData) {
-//       navigate("/login");
-//     }
-//   }, [navigate]);
-
-// // >>>>>>> 707a93243d14cef0ee772867e0bcb6c7c2fb3471
   return (
     <div className="menu-page" style={{ minHeight: "100vh", paddingTop: "80px" }}>
       <div className="container-fluid py-4 px-5">
@@ -159,36 +192,14 @@ export default function Menu() {
             </div>
 
             {selectedRestaurant.sections.map((section) => (
-              <div className="menu-section mb-5" key={section.title}>
-                <h3 className="menu-section-title">{section.title}</h3>
-                <div className="menu-items-scroll">
-                  {section.items.map((item) => (
-                    <div className="menu-scroll-item" key={`${item.name}-${section.title}`}>
-                      <div className="menu-card card h-100 shadow-sm overflow-hidden">
-                        <img
-                          src={process.env.PUBLIC_URL + "/MAT-IMAGES/" + item.image}
-                          alt={item.name}
-                          className="menu-card-img-top"
-                        />
-                        <div className="card-body">
-                          <h5>{item.name}</h5>
-                          <p className="menu-card-text">{item.description}</p>
-                        </div>
-                        <div className="card-footer menu-card-footer d-flex justify-content-between align-items-center">
-                          <span>{item.price}</span>
-                          <button
-                            type="button"
-                            className="btn btn-sm btn-success"
-                            onClick={() => addToCart(item, selectedRestaurant.name)}
-                          >
-                            Lägg till
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <ScrollableMenuSection
+                key={section.title}
+                section={section}
+                selectedRestaurant={selectedRestaurant}
+                quantities={quantities}
+                handleQuantityChange={handleQuantityChange}
+                addToCart={addToCart}
+              />
             ))}
           </div>
         </div>
