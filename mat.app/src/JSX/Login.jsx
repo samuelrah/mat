@@ -117,14 +117,18 @@ export default function Login() {
   return (
     <div className="login-page">
       <div className="login-overlay">
-        <div className="login-header">
-          <h1>Ember and Oak</h1>
-        </div>
-        <div className="login-container">
-          <div className="login-box">
-            <h1>{isSignUp ? 'Sign Up' : 'Sign In'}</h1>
-            
-            <form onSubmit={handleSubmit}>
+        <div className="login-card">
+          <div className="login-hero">
+            <div>
+              <h1>{isSignUp ? 'Create an account' : 'Sign in'}</h1>
+              <p>Logga in för att öppna din kundvagn och få snabb checkout.</p>
+            </div>
+            <div className="login-hero-badge">NUKE</div>
+          </div>
+          <div className="login-container">
+            <div className="login-box">
+              <h2>{isSignUp ? 'Sign Up' : 'Sign In'}</h2>
+              <form onSubmit={handleSubmit}>
               {isSignUp && (
                 <>
                   <div className="form-group">
@@ -225,23 +229,24 @@ export default function Login() {
                   </div>
                 </>
               )}
-              {error && <div style={{ color: 'red', marginBottom: '10px', fontSize: '14px' }}>{error}</div>}
-              <button type="submit" className="btn btn-primary w-100" disabled={loading}>
+              {error && <div className="login-error">{error}</div>}
+              <button type="submit" className="login-btn" disabled={loading}>
                 {loading ? 'Loading...' : (isSignUp ? 'Create Account' : 'Sign In')}
               </button>
             </form>
 
-          <div className="toggle-mode">
-            <p>
-              {isSignUp ? 'Already have an account?' : "Don't have an account?"}
-              <button 
-                type="button" 
-                className="btn-link"
-                onClick={() => setIsSignUp(!isSignUp)}
-              >
-                {isSignUp ? ' Sign In' : ' Sign Up'}
-              </button>
-            </p>
+            <div className="toggle-mode">
+              <p>
+                {isSignUp ? 'Already have an account?' : "Don't have an account?"}
+                <button 
+                  type="button" 
+                  className="toggle-link"
+                  onClick={() => setIsSignUp(!isSignUp)}
+                >
+                  {isSignUp ? ' Sign In' : ' Sign Up'}
+                </button>
+              </p>
+            </div>
           </div>
         </div>
       </div>
