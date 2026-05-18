@@ -12,6 +12,8 @@ import Admin from "../JSX/Admin";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../CSS/App.css";
 
+/* Sidebar-komponenten visar navigationsmenyn och styr om admin-länken ska visas.
+   Den lyssnar också på lokal lagring och användarinloggnings-händelser för att uppdatera rollen. */
 function Sidebar({ menuOpen, setMenuOpen }) {
   const navigate = useNavigate();
   const [isAdmin, setIsAdmin] = React.useState(false);
@@ -62,6 +64,7 @@ function Sidebar({ menuOpen, setMenuOpen }) {
   );
 }
 
+/* SearchBar-komponenten hanterar sökfältets text och navigerar till menysidan när användaren skriver. */
 function SearchBar({ searchQuery, setSearchQuery }) {
   const navigate = useNavigate();
 
@@ -82,12 +85,14 @@ function SearchBar({ searchQuery, setSearchQuery }) {
   );
 }
 
+/* App är huvudkomponenten som hanterar global status för menyer, autentisering och routing i appen. */
 function App() {
   const [menuOpen, setMenuOpen] = React.useState(false);
   const [isAuthenticated, setIsAuthenticated] = React.useState(false);
   const [isAdmin, setIsAdmin] = React.useState(false);
   const [searchQuery, setSearchQuery] = React.useState('');
 
+  /* Uppdatera inloggningsstatusen genom att läsa användardata från localStorage. */
   const updateAuthStatus = () => {
     const userData = localStorage.getItem('user');
     setIsAuthenticated(!!userData);
@@ -120,35 +125,33 @@ function App() {
   return (
     <Router>
       <div className="app">
-        {isAuthenticated && (
-          <>
-            {/* Burger ikon */}
-            <div className="burger" onClick={() => setMenuOpen(true)}>
-              ☰
-            </div>
-            {/* Sök + profil */}
-            <div className="top-right">
-              <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-              <Link className="profile" to="/account" />
-            </div>
-              {/* Sidebar */}
-            <Sidebar menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
-            {/* Overlay */}
-            {menuOpen && (
-              <div className="overlay" onClick={() => setMenuOpen(false)}></div>
-            )}
-          </>
-        )}
+        <>
+          {/* Burger ikon */}
+          <div className="burger" onClick={() => setMenuOpen(true)}>
+            ☰
+          </div>
+          {/* Sök + profil */}
+          <div className="top-right">
+            <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+            <Link className="profile" to="/account" />
+          </div>
+          {/* Sidebar */}
+          <Sidebar menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
+          {/* Overlay */}
+          {menuOpen && (
+            <div className="overlay" onClick={() => setMenuOpen(false)}></div>
+          )}
+        </>
 
         <Routes>
           <Route path="/login" element={<Login />} />
-          <Route path="/" element={isAuthenticated ? <Home /> : <Login />} />
-          <Route path="/about" element={isAuthenticated ? <About /> : <Login />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
           <Route path="/account" element={isAuthenticated ? <Account /> : <Login />} />
-          <Route path="/gallery" element={isAuthenticated ? <Gallery /> : <Login />} />
-          <Route path="/menu" element={isAuthenticated ? <Menu /> : <Login />} />
-          <Route path="/cart" element={isAuthenticated ? <Cart /> : <Login />} />
-          <Route path="/payment" element={isAuthenticated ? <Payment /> : <Login />} />
+          <Route path="/gallery" element={<Gallery />} />
+          <Route path="/menu" element={<Menu />} />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/payment" element={<Payment />} />
           <Route path="/admin" element={isAuthenticated && isAdmin ? <Admin /> : <Login />} />
         </Routes>
       </div>

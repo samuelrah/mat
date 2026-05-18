@@ -1,10 +1,40 @@
-﻿import React from "react";
+import React, { useState } from "react";
 
-export default function Payment() {
+/* Payment-komponenten visar betalningssektionen och växlar mellan flikar. */
+export default function Dashboard() {
+  const [activeSection, setActiveSection] = useState("payment");
+
+  /* Väljer vilken sektion som ska visas när användaren klickar i menyn. */
+  const handleClick = (section) => {
+    setActiveSection(section);
+  };
+
   return (
-    <div className="d-flex flex-column justify-content-center align-items-center" style={{height: '100vh', color: 'white'}}>
-      <h5>Betalning</h5>
-      <p>Betalningssida.</p>
-    </div>
+    <>
+
+      <div className="container">
+      <nav>
+        {["payment"].map((section) => (
+          <a
+            key={section}
+            href="#"
+            className={activeSection === section ? "active" : ""}
+            onClick={(e) => {
+              e.preventDefault();
+              handleClick(section);
+            }}
+          >
+            {section.charAt(0).toUpperCase() + section.slice(1)}
+          </a>
+        ))}
+      </nav>
+
+      <div className="rightbox">
+        <div className={`payment ${activeSection === "payment" ? "" : "noshow"}`}>
+          Payment content
+        </div>
+      </div>
+      </div>
+    </>
   );
 }
