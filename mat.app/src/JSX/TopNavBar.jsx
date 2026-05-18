@@ -1,5 +1,6 @@
-import React from "react";
+﻿import React from "react";
 import { Link, useNavigate } from "react-router-dom";
+import Logo from '../Images/hp-b.png';
 
 function TopNavBar({ menuOpen, setMenuOpen, searchQuery, setSearchQuery }) {
   const navigate = useNavigate();
@@ -21,10 +22,16 @@ function TopNavBar({ menuOpen, setMenuOpen, searchQuery, setSearchQuery }) {
         ☰
       </button>
 
-      {/* Logo/Brand Name */}
+      {/* Logo/Brand Name
       <div className="nav-brand">
         <h1 className="brand-text">Ember and Oak</h1>
-      </div>
+      </div> */}
+
+    <div className="nav-logo">
+      <button type="button" className="nav-logo-button">
+        <img src={Logo} alt="logo" style={{ height: '50px', width: '50px' }} />
+      </button>
+    </div>
 
       {/* Search and Profile */}
       <div className="nav-right">
