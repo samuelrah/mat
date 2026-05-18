@@ -165,7 +165,7 @@ export default function Menu() {
     alert(`${item.name} x${validQuantity} lades till i kundvagnen.`);
   };
   return (
-    <div className="menu-page" style={{ minHeight: "100vh", paddingTop: "80px" }}>
+    <div className="menu-page" style={{ minHeight: "100vh", paddingTop: "90px" }}>
       <div className="container-fluid py-4 px-5">
         <div className="row g-4">
           <div className="col-12 col-md-3">

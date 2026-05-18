@@ -51,7 +51,7 @@ export default function Account() {
     return null; // Will redirect, show nothing while redirecting
   } 
     return (
-        <div style={{ minHeight: "100vh", paddingTop: "80px" }}>
+        <div style={{ minHeight: "100vh", paddingTop: "90px" }}>
           <div className="container py-4">
             <div className="row justify-content-center">
                 <div className="col-12 col-md-8">

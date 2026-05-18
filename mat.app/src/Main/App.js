@@ -9,6 +9,7 @@ import Cart from "../JSX/Cart";
 import Payment from "../JSX/Payment";
 import Login from "../JSX/Login";
 import Admin from "../JSX/Admin";
+import TopNavBar from "../JSX/TopNavBar";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../CSS/App.css";
 
@@ -64,28 +65,6 @@ function Sidebar({ menuOpen, setMenuOpen }) {
   );
 }
 
-/* SearchBar-komponenten hanterar sökfältets text och navigerar till menysidan när användaren skriver. */
-function SearchBar({ searchQuery, setSearchQuery }) {
-  const navigate = useNavigate();
-
-  const handleSearchChange = (event) => {
-    const value = event.target.value;
-    setSearchQuery(value);
-    // Navigate to /menu with query param so the Menu page can read/filter results
-    navigate(`/menu?q=${encodeURIComponent(value)}`);
-  };
-
-  return (
-    <input
-      type="text"
-      placeholder="search"
-      className="search"
-      value={searchQuery}
-      onChange={handleSearchChange}
-    />
-  );
-}
-
 /* App är huvudkomponenten som hanterar global status för menyer, autentisering och routing i appen. */
 function App() {
   const [menuOpen, setMenuOpen] = React.useState(false);
@@ -127,15 +106,13 @@ function App() {
     <Router>
       <div className="app">
         <>
-          {/* Burger ikon */}
-          <div className="burger" onClick={() => setMenuOpen(true)}>
-            ☰
-          </div>
-          {/* Sök + profil */}
-          <div className="top-right">
-            <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-            <Link className="profile" to="/account" />
-          </div>
+          {/* Top Navigation Bar */}
+          <TopNavBar 
+            menuOpen={menuOpen} 
+            setMenuOpen={setMenuOpen}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+          />
           {/* Sidebar */}
           <Sidebar menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
           {/* Overlay */}

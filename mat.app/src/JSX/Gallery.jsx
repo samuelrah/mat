@@ -7,7 +7,7 @@ export default function Gallery() {
   const [zoomed, setZoomed] = useState(null);
 
   return (
-    <div className="gallery-page" style={{ minHeight: "100vh", paddingTop: "80px" }}>
+    <div className="gallery-page" style={{ minHeight: "100vh", paddingTop: "90px" }}>
       <div className="container-fluid py-4 px-5">
         <div className="gallery-header mb-4">
           <h2 className="text-white" style={{marginTop: '50px', textAlign: 'left'}}>Galleri</h2>
