@@ -13,7 +13,7 @@ export default function Home() {
         </div>
 
         <div className="showcase-center">
-          <h2>Välkommen till Ember and Oak</h2>
+          <h2>Välkommen till<br></br> Ember and Oak</h2>
           <p>Upptäck våra signaturrätter och boka bord eller beställ direkt.</p>
           <button className="btn btn-dark" onClick={() => navigate("/menu")}>beställ nu</button>
         </div>
