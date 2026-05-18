@@ -29,13 +29,12 @@ export default function About() {
         <div>
           kontakt information:<br/>
             <a
-              href="https://mail.google.com/mail/?view=cm&fs=1&to=samuel.rahseparmohammadi@elev.ga.ntig.se"
+              href="https://mail.google.com/mail/?view=cm&fs=1&to=emberandoak@gmail.com"
               target="_blank"
               rel="noopener noreferrer"
               style={{color:"white", marginRight: "20px"}}
             >
-              samuel.rahseparmohammadi@elev.ga.ntig.se
-            </a>
+              emberandoak@gmail.com            </a>
             <a href="tel:1177" style={{color:"white"}}>Telefonnummer: 1177</a>
         </div>
         <div>
