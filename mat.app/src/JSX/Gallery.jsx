@@ -27,7 +27,7 @@ export default function Gallery() {
                     objectFit: "cover",
                     width: "100%",
                     borderRadius: 0,
-                    border: hovered === index ? '1px solid white' : '0px solid transparent',
+                    border: hovered === index ? '3px solid orange' : '0px solid transparent',
                     transition: 'border-color 0.3s ease',
                   }}
                   onMouseEnter={() => setHovered(index)}

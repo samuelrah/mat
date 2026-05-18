@@ -55,8 +55,7 @@ function Sidebar({ menuOpen, setMenuOpen }) {
       <ul>
         <li><button onClick={() => {navigate("/"); setMenuOpen(false);}}>Startsida</button></li>
         <li><button onClick={() => {navigate("/gallery"); setMenuOpen(false);}}>Galleri</button></li>
-        <li><button onClick={() => {navigate("/about"); setMenuOpen(false);}}>Om oss</button></li>
-        <li><button onClick={() => {navigate("/menu"); setMenuOpen(false);}}>Meny</button></li>
+        <li><button onClick={() => {navigate("/about"); setMenuOpen(false);}}>Om oss</button></li>        <li><button onClick={() => {navigate("/account"); setMenuOpen(false);}}>Konto</button></li>        <li><button onClick={() => {navigate("/menu"); setMenuOpen(false);}}>Meny</button></li>
         <li><button onClick={() => {navigate("/cart"); setMenuOpen(false);}}>Kundvagn</button></li>
         <li><button onClick={() => {navigate("/payment"); setMenuOpen(false);}}>Betalning</button></li>
         {isAdmin && <li><button onClick={() => {navigate("/admin"); setMenuOpen(false);}}>Admin</button></li>}
