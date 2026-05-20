@@ -7,29 +7,21 @@ export default function Gallery() {
   const [zoomed, setZoomed] = useState(null);
 
   return (
-    <div className="gallery-page" style={{ minHeight: "100vh", paddingTop: "90px" }}>
-      <div className="container-fluid py-4 px-5">
+    <div className="gallery-page">
+      <div className="gallery-content">
         <div className="gallery-header mb-4">
-          <h2 className="text-white" style={{marginTop: '50px', textAlign: 'left'}}>Galleri</h2>
-          <p className="text-white-50">Bilder på mat och dryck från vår galleri.</p>
+          <h2>Galleri</h2>
+          <p>Bilder på mat och dryck från våra menyer.</p>
         </div>
 
-        <div className="row row-cols-3 g-4">
+        <div className="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4 gallery-grid">
           {galleryImages.map((image, index) => (
             <div className="col" key={image}>
-              <div className="card h-auto shadow-sm overflow-hidden" style={{ borderRadius: 0, position: 'relative' }}>
+              <div className="gallery-card">
                 <img
                   src={process.env.PUBLIC_URL + "/MAT-IMAGES/" + image}
-                  className="card-img-top"
+                  className={`gallery-image ${hovered === index ? "hovered" : ""}`}
                   alt={`Galleri bild ${index + 1}`}
-                  style={{
-                    height: "370px",
-                    objectFit: "cover",
-                    width: "100%",
-                    borderRadius: 0,
-                    border: hovered === index ? '3px solid orange' : '0px solid transparent',
-                    transition: 'border-color 0.3s ease',
-                  }}
                   onMouseEnter={() => setHovered(index)}
                   onMouseLeave={() => setHovered(null)}
                   onClick={() => setZoomed(image)}
