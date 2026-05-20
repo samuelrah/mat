@@ -123,7 +123,7 @@ export default function Login() {
               <h1>{isSignUp ? 'Create an account' : 'Sign in'}</h1>
               <p>Logga in för att öppna din kundvagn och få snabb checkout.</p>
             </div>
-            <div className="login-hero-badge">NUKE</div>
+            <div className="login-hero-badge">BEN10</div>
           </div>
           <div className="login-container">
             <div className="login-box">

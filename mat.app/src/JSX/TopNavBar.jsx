@@ -22,6 +22,10 @@ function TopNavBar({ menuOpen, setMenuOpen, searchQuery, setSearchQuery }) {
         ☰
       </button>
 
+       {/* Logo/Brand Name */}
+      <div className="nav-brand">
+        <h1 className="brand-text">Ember and Oak</h1>
+      </div>
 
         <img 
         src={Logo} 
