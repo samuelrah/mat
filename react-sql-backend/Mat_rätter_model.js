@@ -26,7 +26,7 @@ const getDishByName = async (matNamn) => {
 };
 
 const createDish = async (body) => {
-  const { matNamn, matPrice, matRating, matDesc } = body;
+  const { matNamn, matPrice, matRating, matDesc, resturant, matImage } = body;
   
   if (!matNamn || !matPrice) {
     throw new Error('matNamn och matPrice är obligatoriska');
@@ -38,8 +38,8 @@ const createDish = async (body) => {
   
   try {
     const result = await pool.query(
-      'INSERT INTO public.Mat_Ratter (matNamn, matPrice, matRating, matDesc) VALUES ($1, $2, $3, $4) RETURNING *',
-      [matNamn, matPrice, matRating || null, matDesc || null]
+      'INSERT INTO public.Mat_Ratter (matNamn, matPrice, matRating, matDesc, resturant, matImage) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+      [matNamn, matPrice, matRating || null, matDesc || null, resturant || null, matImage || null]
     );
     return result.rows[0];
   } catch (error) {
@@ -70,7 +70,7 @@ const deleteDish = async (matNamn) => {
 };
 
 const updateDish = async (matNamn, body) => {
-  const { matPrice, matRating, matDesc } = body;
+  const { matPrice, matRating, matDesc, resturant, matImage } = body;
   
   if (!matNamn) throw new Error('matNamn saknas i URL:en');
   
@@ -80,8 +80,8 @@ const updateDish = async (matNamn, body) => {
   
   try {
     const result = await pool.query(
-      'UPDATE public.Mat_Ratter SET matPrice = COALESCE($2, matPrice), matRating = COALESCE($3, matRating), matDesc = COALESCE($4, matDesc) WHERE matNamn = $1 RETURNING *',
-      [matNamn, matPrice || null, matRating || null, matDesc || null]
+      'UPDATE public.Mat_Ratter SET matPrice = COALESCE($2, matPrice), matRating = COALESCE($3, matRating), matDesc = COALESCE($4, matDesc), resturant = COALESCE($5, resturant), matImage = COALESCE($6, matImage) WHERE matNamn = $1 RETURNING *',
+      [matNamn, matPrice || null, matRating || null, matDesc || null, resturant || null, matImage || null]
     );
     
     if (result.rowCount === 0) {

@@ -1,10 +1,12 @@
 import React, { useState } from "react";
+import { restaurants } from "./menuData";
 
 const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3001";
 
 /* Admin-komponenten visar adminstatistik och användarhanteringsverktyg. */
 export default function Admin() {
   const [showCreateUserForm, setShowCreateUserForm] = useState(false);
+  const [showCreateDishForm, setShowCreateDishForm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [formData, setFormData] = useState({
@@ -19,6 +21,13 @@ export default function Admin() {
     user_is_premium: false,
     user_is_admin: false,
   });
+  const [dishData, setDishData] = useState({
+    matNamn: "",
+    matPrice: "",
+    matRating: "",
+    matDesc: "",
+    restaurant: "",
+  });
 
   /* Uppdaterar formulärvärden för att skapa en ny användare. */
   const handleInputChange = (e) => {
@@ -26,6 +35,15 @@ export default function Admin() {
     setFormData((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
+    }));
+  };
+
+  /* Uppdaterar formulärvärden för att skapa en ny maträtt. */
+  const handleDishInputChange = (e) => {
+    const { name, value } = e.target;
+    setDishData((prev) => ({
+      ...prev,
+      [name]: value,
     }));
   };
 
@@ -83,6 +101,64 @@ export default function Admin() {
     }
   };
 
+  /* Skapar en ny maträtt via API och visar statusmeddelanden. */
+  const handleCreateDish = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage("");
+
+    if (!dishData.matNamn || !dishData.matPrice) {
+      setMessage("✗ Error: Dish name and price are required.");
+      setLoading(false);
+      return;
+    }
+
+    if (dishData.matRating && (isNaN(dishData.matRating) || dishData.matRating < 1 || dishData.matRating > 5)) {
+      setMessage("✗ Error: Rating must be between 1 and 5.");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const dishPayload = {
+        matNamn: dishData.matNamn,
+        matPrice: parseFloat(dishData.matPrice),
+        matRating: dishData.matRating ? parseInt(dishData.matRating) : null,
+        matDesc: dishData.matDesc || null,
+        restaurant: dishData.restaurant || null,
+      };
+
+      const response = await fetch(`${API_URL}/api/dishes`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(dishPayload),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to create dish");
+      }
+
+      setMessage(`✓ Dish "${data.matNamn}" created successfully!`);
+      setDishData({
+        matNamn: "",
+        matPrice: "",
+        matRating: "",
+        matDesc: "",
+        restaurant: "",
+      });
+      window.dispatchEvent(new Event('dishAdded'));
+      setTimeout(() => setShowCreateDishForm(false), 2000);
+    } catch (error) {
+      setMessage(`✗ Error: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="admin-page">
       <div className="admin-header">
@@ -129,6 +205,17 @@ export default function Admin() {
             onClick={() => setShowCreateUserForm(!showCreateUserForm)}
           >
             {showCreateUserForm ? "Stäng formulär" : "Skapa ny användare"}
+          </button>
+        </section>
+
+        <section className="admin-card admin-dishes">
+          <h3>Menyhantering</h3>
+          <p>Lägg till, redigera och ta bort maträtter.</p>
+          <button
+            className="admin-action"
+            onClick={() => setShowCreateDishForm(!showCreateDishForm)}
+          >
+            {showCreateDishForm ? "Stäng formulär" : "Lägg till ny maträtt"}
           </button>
         </section>
       </div>
@@ -272,6 +359,94 @@ export default function Admin() {
 
             <button type="submit" className="admin-action" disabled={loading}>
               {loading ? "Skapar..." : "Skapa användare"}
+            </button>
+          </form>
+        </section>
+      )}
+
+      {showCreateDishForm && (
+        <section className="admin-card create-dish-form">
+          <h3>Lägg till ny maträtt</h3>
+          <form onSubmit={handleCreateDish}>
+            <div className="form-group">
+              <label htmlFor="matNamn">Maträtt namn *</label>
+              <input
+                type="text"
+                id="matNamn"
+                name="matNamn"
+                value={dishData.matNamn}
+                onChange={handleDishInputChange}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="restaurant">Restaurang</label>
+              <select
+                id="restaurant"
+                name="restaurant"
+                value={dishData.restaurant}
+                onChange={handleDishInputChange}
+              >
+                <option value="">Välj restaurang...</option>
+                {restaurants.map((restaurant) => (
+                  <option key={restaurant.name} value={restaurant.name}>
+                    {restaurant.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="matPrice">Pris *</label>
+                <input
+                  type="number"
+                  id="matPrice"
+                  name="matPrice"
+                  step="0.01"
+                  value={dishData.matPrice}
+                  onChange={handleDishInputChange}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="matRating">Betyg (1-5)</label>
+                <input
+                  type="number"
+                  id="matRating"
+                  name="matRating"
+                  min="1"
+                  max="5"
+                  value={dishData.matRating}
+                  onChange={handleDishInputChange}
+                />
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="matDesc">Beskrivning</label>
+              <textarea
+                id="matDesc"
+                name="matDesc"
+                value={dishData.matDesc}
+                onChange={handleDishInputChange}
+                rows="4"
+              />
+            </div>
+
+            {message && (
+              <div
+                className={`message ${
+                  message.includes("✓") ? "success" : "error"
+                }`}
+              >
+                {message}
+              </div>
+            )}
+
+            <button type="submit" className="admin-action" disabled={loading}>
+              {loading ? "Lägger till..." : "Lägg till maträtt"}
             </button>
           </form>
         </section>
