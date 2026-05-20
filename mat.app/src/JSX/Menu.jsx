@@ -2,6 +2,8 @@ import React, { useEffect, useState, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { restaurants } from "./menuData";
 
+// Den här komponenten visar en sektion av menyn som går att scrolla åt sidan.
+// Den används för att bygga en del av menyn där det finns många produkter i en rad.
 function ScrollableMenuSection({
   section,
   selectedRestaurant,
@@ -9,10 +11,14 @@ function ScrollableMenuSection({
   handleQuantityChange,
   addToCart,
 }) {
+  // ref används för att komma åt själva DOM-elementet med scroll.
   const scrollRef = useRef(null);
+
+  // State som berättar om vi kan scrolla åt vänster eller höger.
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
 
+  // Den här funktionen uppdaterar om pilarna för scrollning ska synas.
   const updateScrollButtons = () => {
     if (scrollRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
@@ -21,6 +27,8 @@ function ScrollableMenuSection({
     }
   };
 
+  // useEffect körs efter att komponenten har renderats.
+  // Vi använder det här för att lyssna på scroll-händelser och uppdatera pilarna.
   useEffect(() => {
     updateScrollButtons();
     const handleScroll = () => updateScrollButtons();
@@ -31,12 +39,14 @@ function ScrollableMenuSection({
     }
   }, []);
 
+  // Flytta scrollen åt vänster när man klickar på pilen.
   const scrollLeft = () => {
     if (scrollRef.current) {
       scrollRef.current.scrollBy({ left: -300, behavior: "smooth" });
     }
   };
 
+  // Flytta scrollen åt höger när man klickar på pilen.
   const scrollRight = () => {
     if (scrollRef.current) {
       scrollRef.current.scrollBy({ left: 300, behavior: "smooth" });
@@ -54,6 +64,7 @@ function ScrollableMenuSection({
         )}
         <div className="menu-items-scroll" ref={scrollRef}>
           {section.items.map((item) => {
+            // itemKey gör en unik nyckel för varje produkt och restaurang.
             const itemKey = `${selectedRestaurant.name}-${section.title}-${item.name}`;
             const itemQuantity = quantities[itemKey] === undefined ? 1 : quantities[itemKey];
             return (
@@ -77,6 +88,7 @@ function ScrollableMenuSection({
                         value={itemQuantity}
                         onChange={(e) => handleQuantityChange(itemKey, e.target.value)}
                         onBlur={() => {
+                          // Om fältet är tomt när användaren lämnar det, sätts det till 1.
                           if (quantities[itemKey] === "" || quantities[itemKey] === undefined) {
                             handleQuantityChange(itemKey, "1");
                           }
@@ -109,22 +121,27 @@ function ScrollableMenuSection({
 }
 
 export default function Menu() {
+  // useNavigate används för att byta sida, exempelvis till /login.
   const navigate = useNavigate();
+
+  // useLocation används för att läsa URL:ens sökparametrar.
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const queryParam = params.get('q') || '';
+
+  // Vald restaurang är den restaurang som visas i menyn.
   const [selectedRestaurant, setSelectedRestaurant] = useState(restaurants[0]);
+
+  // quantities lagrar hur många av varje produkt användaren har skrivit.
   const [quantities, setQuantities] = useState({});
 
-  /* Omvandlar prissträng till ett numeriskt värde för beräkningar. */
+  // parsePrice gör om en pris-text (t.ex. "59 kr") till en siffra.
   const parsePrice = (price) => {
     const parsed = price.toString().replace(/[^0-9,.]/g, "").replace(",", ".");
     return Number(parsed) || 0;
   };
 
-  /* Sparar vald kvantitet för en produkt.
-     Om användaren tar bort allt i inputfältet sparas tom sträng först,
-     sedan blir det 1 igen när fältet tappar fokus eller när produkten läggs till. */
+  // Uppdaterar antalet för en viss produkt i quantities state.
   const handleQuantityChange = (itemKey, value) => {
     const quantity = value === "" ? "" : Math.max(Number(value) || 1, 1);
     setQuantities((prev) => ({
@@ -133,10 +150,11 @@ export default function Menu() {
     }));
   };
 
-  /* Lägger till en vald produkt i kundvagnen i localStorage. */
+  // Lägger till en produkt i kundvagnen i localStorage.
   const addToCart = (item, restaurantName, quantity = 1) => {
     const userData = localStorage.getItem("user");
     if (!userData) {
+      // Om användaren inte är inloggad, skicka dem till login-sidan.
       navigate("/login");
       return;
     }
@@ -149,9 +167,11 @@ export default function Menu() {
     );
 
     if (existingIndex >= 0) {
+      // Om varan redan finns i kundvagnen, lägg till antalet.
       cart[existingIndex].quantity += validQuantity;
       cart[existingIndex].totalPrice = cart[existingIndex].quantity * cart[existingIndex].unitPrice;
     } else {
+      // Annars skapa en ny produkt-post i kundvagnen.
       cart.push({
         ...item,
         restaurantName,
@@ -164,6 +184,7 @@ export default function Menu() {
     localStorage.setItem("cart", JSON.stringify(cart));
     alert(`${item.name} x${validQuantity} lades till i kundvagnen.`);
   };
+
   return (
     <div className="menu-page" style={{ minHeight: "100vh", paddingTop: "90px" }}>
       <div className="container-fluid py-4 px-5">
@@ -189,7 +210,7 @@ export default function Menu() {
           </div>
 
           <div className="col-12 col-md-9">
-            {/* If a search query exists, show filtered results across sections */}
+            {/* Om det finns ett sökord i URL:en visar vi sökresultaten istället för hela menyn. */}
             {queryParam ? (
               <div className="menu-section mb-4">
                 <h3 className="menu-section-title">Sökresultat för "{queryParam}"</h3>
