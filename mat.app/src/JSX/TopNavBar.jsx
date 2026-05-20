@@ -27,16 +27,6 @@ function TopNavBar({ menuOpen, setMenuOpen, searchQuery, setSearchQuery }) {
         <h1 className="brand-text">Ember and Oak</h1>
       </div>
 
-        <img 
-        src={Logo} 
-        alt="logo" 
-        style={{ 
-          height: '90px', 
-          width: '90px', 
-          borderRadius: '100%', 
-          justifyContent: "center"
-          }} />
-
       {/* Search and Profile */}
       <div className="nav-right">
         <input
