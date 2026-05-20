@@ -5,7 +5,10 @@ const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3001";
 
 /* Menu-komponenten visar restaurangmenyer och lägger till artiklar i kundvagnen. */
 export default function Menu() {
+  // useNavigate används för att byta sida, exempelvis till /login.
   const navigate = useNavigate();
+
+  // useLocation används för att läsa URL:ens sökparametrar.
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const queryParam = params.get('q') || '';
@@ -77,9 +80,7 @@ export default function Menu() {
     return Number(parsed) || 0;
   };
 
-  /* Sparar vald kvantitet för en produkt.
-     Om användaren tar bort allt i inputfältet sparas tom sträng först,
-     sedan blir det 1 igen när fältet tappar fokus eller när produkten läggs till. */
+  // Uppdaterar antalet för en viss produkt i quantities state.
   const handleQuantityChange = (itemKey, value) => {
     const quantity = value === "" ? "" : Math.max(Number(value) || 1, 1);
     setQuantities((prev) => ({
@@ -88,10 +89,11 @@ export default function Menu() {
     }));
   };
 
-  /* Lägger till en vald produkt i kundvagnen i localStorage. */
+  // Lägger till en produkt i kundvagnen i localStorage.
   const addToCart = (dish) => {
     const userData = localStorage.getItem("user");
     if (!userData) {
+      // Om användaren inte är inloggad, skicka dem till login-sidan.
       navigate("/login");
       return;
     }
@@ -106,9 +108,11 @@ export default function Menu() {
     );
 
     if (existingIndex >= 0) {
+      // Om varan redan finns i kundvagnen, lägg till antalet.
       cart[existingIndex].quantity += validQuantity;
       cart[existingIndex].totalPrice = cart[existingIndex].quantity * cart[existingIndex].unitPrice;
     } else {
+      // Annars skapa en ny produkt-post i kundvagnen.
       cart.push({
         matNamn: dish.matnamn,
         matPrice: dish.matprice,
@@ -124,6 +128,7 @@ export default function Menu() {
     localStorage.setItem("cart", JSON.stringify(cart));
     alert(`${dish.matnamn} lades till i kundvagnen.`);
   };
+
   return (
     <div className="menu-page" style={{ minHeight: "100vh", paddingTop: "90px" }}>
       {loading && (

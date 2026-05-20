@@ -23,16 +23,6 @@ function TopNavBar({ menuOpen, setMenuOpen, searchQuery, setSearchQuery }) {
       </button>
 
 
-        <img 
-        src={Logo} 
-        alt="logo" 
-        style={{ 
-          height: '90px', 
-          width: '90px', 
-          borderRadius: '100%', 
-          justifyContent: "center"
-          }} />
-
       {/* Search and Profile */}
       <div className="nav-right">
         <input
