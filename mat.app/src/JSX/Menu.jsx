@@ -1,125 +1,9 @@
-import React, { useEffect, useState, useRef } from "react";
+﻿import React, { useEffect, useState, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { restaurants } from "./menuData";
 
-// Den här komponenten visar en sektion av menyn som går att scrolla åt sidan.
-// Den används för att bygga en del av menyn där det finns många produkter i en rad.
-function ScrollableMenuSection({
-  section,
-  selectedRestaurant,
-  quantities,
-  handleQuantityChange,
-  addToCart,
-}) {
-  // ref används för att komma åt själva DOM-elementet med scroll.
-  const scrollRef = useRef(null);
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3001";
 
-  // State som berättar om vi kan scrolla åt vänster eller höger.
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
-
-  // Den här funktionen uppdaterar om pilarna för scrollning ska synas.
-  const updateScrollButtons = () => {
-    if (scrollRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
-      setCanScrollLeft(scrollLeft > 0);
-      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 1);
-    }
-  };
-
-  // useEffect körs efter att komponenten har renderats.
-  // Vi använder det här för att lyssna på scroll-händelser och uppdatera pilarna.
-  useEffect(() => {
-    updateScrollButtons();
-    const handleScroll = () => updateScrollButtons();
-    const scrollElement = scrollRef.current;
-    if (scrollElement) {
-      scrollElement.addEventListener("scroll", handleScroll);
-      return () => scrollElement.removeEventListener("scroll", handleScroll);
-    }
-  }, []);
-
-  // Flytta scrollen åt vänster när man klickar på pilen.
-  const scrollLeft = () => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollBy({ left: -300, behavior: "smooth" });
-    }
-  };
-
-  // Flytta scrollen åt höger när man klickar på pilen.
-  const scrollRight = () => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollBy({ left: 300, behavior: "smooth" });
-    }
-  };
-
-  return (
-    <div className="menu-section mb-5" key={section.title}>
-      <h3 className="menu-section-title">{section.title}</h3>
-      <div className="menu-scroll-container">
-        {canScrollLeft && (
-          <button className="scroll-arrow scroll-arrow-left" onClick={scrollLeft}>
-            ‹
-          </button>
-        )}
-        <div className="menu-items-scroll" ref={scrollRef}>
-          {section.items.map((item) => {
-            // itemKey gör en unik nyckel för varje produkt och restaurang.
-            const itemKey = `${selectedRestaurant.name}-${section.title}-${item.name}`;
-            const itemQuantity = quantities[itemKey] === undefined ? 1 : quantities[itemKey];
-            return (
-              <div className="menu-scroll-item" key={itemKey}>
-                <div className="menu-card card h-100 shadow-sm overflow-hidden">
-                  <img
-                    src={process.env.PUBLIC_URL + "/MAT-IMAGES/" + item.image}
-                    alt={item.name}
-                    className="menu-card-img-top"
-                  />
-                  <div className="card-body">
-                    <h5>{item.name}</h5>
-                    <p className="menu-card-text">{item.description}</p>
-                  </div>
-                  <div className="card-footer menu-card-footer d-flex justify-content-between align-items-center">
-                    <div>
-                      <span>{item.price}</span>
-                      <input
-                        type="number"
-                        min="1"
-                        value={itemQuantity}
-                        onChange={(e) => handleQuantityChange(itemKey, e.target.value)}
-                        onBlur={() => {
-                          // Om fältet är tomt när användaren lämnar det, sätts det till 1.
-                          if (quantities[itemKey] === "" || quantities[itemKey] === undefined) {
-                            handleQuantityChange(itemKey, "1");
-                          }
-                        }}
-                        className="form-control form-control-sm mt-2"
-                        style={{ width: "70px" }}
-                      />
-                    </div>
-                    <button
-                      type="button"
-                      className="btn btn-sm btn-success"
-                      onClick={() => addToCart(item, selectedRestaurant.name, itemQuantity)}
-                    >
-                      Lägg till
-                    </button>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-        {canScrollRight && (
-          <button className="scroll-arrow scroll-arrow-right" onClick={scrollRight}>
-            ›
-          </button>
-        )}
-      </div>
-    </div>
-  );
-}
-
+/* Menu-komponenten visar restaurangmenyer och lägger till artiklar i kundvagnen. */
 export default function Menu() {
   // useNavigate används för att byta sida, exempelvis till /login.
   const navigate = useNavigate();
@@ -128,14 +12,69 @@ export default function Menu() {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const queryParam = params.get('q') || '';
-
-  // Vald restaurang är den restaurang som visas i menyn.
-  const [selectedRestaurant, setSelectedRestaurant] = useState(restaurants[0]);
-
-  // quantities lagrar hur många av varje produkt användaren har skrivit.
+  const [restaurants, setRestaurants] = useState([]);
+  const [selectedRestaurant, setSelectedRestaurant] = useState(null);
+  const [dishes, setDishes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [quantities, setQuantities] = useState({});
 
-  // parsePrice gör om en pris-text (t.ex. "59 kr") till en siffra.
+  /* Grupperar maträtter efter restaurang */
+  const groupDishesByRestaurant = (allDishes) => {
+    const grouped = {};
+    allDishes.forEach(dish => {
+      const restaurantName = dish.restaurant || "Övrigt";
+      if (!grouped[restaurantName]) {
+        grouped[restaurantName] = [];
+      }
+      grouped[restaurantName].push(dish);
+    });
+    return grouped;
+  };
+
+  /* Hämtar alla maträtter från databasen */
+  const fetchDishes = async () => {
+    try {
+      setLoading(true);
+      setError("");
+      const response = await fetch(`${API_URL}/api/dishes`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch dishes");
+      }
+      const data = await response.json();
+      setDishes(data);
+      
+      // Extrahera unika restauranger och sortera
+      const restaurantNames = [...new Set(data.map(d => d.resturant || "Övrigt"))].sort();
+      const restaurantList = restaurantNames.map(name => ({ name }));
+      setRestaurants(restaurantList);
+      
+      // Sätt första restaurangen som vald
+      if (restaurantList.length > 0) {
+        setSelectedRestaurant(restaurantList[0]);
+      }
+    } catch (err) {
+      setError(err.message);
+      console.error("Error fetching dishes:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /* Hämtar maträtter när komponenten monteras */
+  useEffect(() => {
+    fetchDishes();
+
+    /* Lyssnar efter när nya rätter läggs till från admin-panelen */
+    const handleDishAdded = () => {
+      fetchDishes();
+    };
+
+    window.addEventListener('dishAdded', handleDishAdded);
+    return () => window.removeEventListener('dishAdded', handleDishAdded);
+  }, []);
+
+  /* Omvandlar prissträng till ett numeriskt värde för beräkningar. */
   const parsePrice = (price) => {
     const parsed = price.toString().replace(/[^0-9,.]/g, "").replace(",", ".");
     return Number(parsed) || 0;
@@ -151,7 +90,7 @@ export default function Menu() {
   };
 
   // Lägger till en produkt i kundvagnen i localStorage.
-  const addToCart = (item, restaurantName, quantity = 1) => {
+  const addToCart = (dish) => {
     const userData = localStorage.getItem("user");
     if (!userData) {
       // Om användaren inte är inloggad, skicka dem till login-sidan.
@@ -159,11 +98,13 @@ export default function Menu() {
       return;
     }
 
+    const itemKey = dish.matnamn;
+    const quantity = quantities[itemKey] || 1;
     const validQuantity = Math.max(Number(quantity) || 1, 1);
     const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-    const unitPrice = parsePrice(item.price);
+    const unitPrice = parsePrice(dish.matprice);
     const existingIndex = cart.findIndex(
-      (cartItem) => cartItem.name === item.name && cartItem.restaurantName === restaurantName
+      (cartItem) => cartItem.matNamn === dish.matnamn
     );
 
     if (existingIndex >= 0) {
@@ -173,127 +114,173 @@ export default function Menu() {
     } else {
       // Annars skapa en ny produkt-post i kundvagnen.
       cart.push({
-        ...item,
-        restaurantName,
+        matNamn: dish.matnamn,
+        matPrice: dish.matprice,
+        matRating: dish.matrating || 0,
+        matDesc: dish.matdesc,
         quantity: validQuantity,
         unitPrice,
         totalPrice: unitPrice * validQuantity,
+        restaurant: dish.resturant || selectedRestaurant.name,
       });
     }
 
     localStorage.setItem("cart", JSON.stringify(cart));
-    alert(`${item.name} x${validQuantity} lades till i kundvagnen.`);
+    alert(`${dish.matnamn} lades till i kundvagnen.`);
   };
 
   return (
     <div className="menu-page" style={{ minHeight: "100vh", paddingTop: "90px" }}>
-      <div className="container-fluid py-4 px-5">
-        <div className="row g-4">
-          <div className="col-12 col-md-3">
-            <div className="menu-filter-card restaurant-card">
-              <h5>Restauranger</h5>
-              <div className="restaurant-list">
-                {restaurants.map((restaurant) => (
-                  <button
-                    key={restaurant.name}
-                    type="button"
-                    className={`restaurant-button ${
-                      restaurant.name === selectedRestaurant.name ? "active" : ""
-                    }`}
-                    onClick={() => setSelectedRestaurant(restaurant)}
-                  >
-                    {restaurant.name}
-                  </button>
-                ))}
+      {loading && (
+        <div className="container-fluid py-4 px-5">
+          <div className="alert alert-info">Laddar meny...</div>
+        </div>
+      )}
+      {error && (
+        <div className="container-fluid py-4 px-5">
+          <div className="alert alert-danger">Fel: {error}</div>
+        </div>
+      )}
+      {!loading && (
+        <div className="container-fluid py-4 px-5">
+          <div className="row g-4">
+            <div className="col-12 col-md-3">
+              <div className="menu-filter-card restaurant-card">
+                <h5>Restauranger</h5>
+                <div className="restaurant-list">
+                  {restaurants.map((restaurant) => (
+                    <button
+                      key={restaurant.name}
+                      type="button"
+                      className={`restaurant-button ${
+                        restaurant.name === selectedRestaurant?.name ? "active" : ""
+                      }`}
+                      onClick={() => setSelectedRestaurant(restaurant)}
+                    >
+                      {restaurant.name}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className="col-12 col-md-9">
-            {/* Om det finns ett sökord i URL:en visar vi sökresultaten istället för hela menyn. */}
-            {queryParam ? (
-              <div className="menu-section mb-4">
-                <h3 className="menu-section-title">Sökresultat för "{queryParam}"</h3>
-                <div className="menu-items-scroll">
-                  {selectedRestaurant.sections.flatMap((section) =>
-                    section.items
-                      .filter((item) =>
-                        (section.title + ' ' + item.name + ' ' + item.description)
-                          .toLowerCase()
-                          .includes(queryParam.toLowerCase())
-                      )
-                      .map((item) => (
-                        <div className="menu-scroll-item" key={`${item.name}-${section.title}`}>
-                          <div className="menu-card card h-100 shadow-sm overflow-hidden">
-                            <img
-                              src={process.env.PUBLIC_URL + "/MAT-IMAGES/" + item.image}
-                              alt={item.name}
-                              className="menu-card-img-top"
-                            />
-                            <div className="card-body">
-                              <h5>{item.name}</h5>
-                              <p className="menu-card-text">{item.description}</p>
+            <div className="col-12 col-md-9">
+              {selectedRestaurant && (
+                <>
+                  {/* Search results view */}
+                  {queryParam ? (
+                    <div className="menu-section mb-4">
+                      <h3 className="menu-section-title">Sökresultat för "{queryParam}"</h3>
+                      <div className="menu-items-scroll">
+                        {dishes
+                          .filter((dish) =>
+                            (dish.resturant || "Övrigt") === selectedRestaurant.name &&
+                            (dish.matnamn + ' ' + (dish.matdesc || ''))
+                              .toLowerCase()
+                              .includes(queryParam.toLowerCase())
+                          )
+                          .map((dish) => (
+                            <div className="menu-scroll-item" key={dish.matnamn}>
+                              <div className="menu-card card h-100 shadow-sm overflow-hidden">
+                                {dish.matimage ? (
+                                  <img
+                                    src={process.env.PUBLIC_URL + "/MAT-IMAGES/" + dish.matimage}
+                                    alt={dish.matnamn}
+                                    className="menu-card-img-top"
+                                  />
+                                ) : (
+                                  <div className="menu-card-img-top" style={{
+                                    backgroundColor: '#e9ecef',
+                                    height: '200px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontSize: '12px',
+                                    color: '#6c757d'
+                                  }}>
+                                    [Ingen bild]
+                                  </div>
+                                )}
+                                <div className="card-body">
+                                  <h5>{dish.matnamn}</h5>
+                                  <p className="menu-card-text">{dish.matdesc || 'Ingen beskrivning'}</p>
+                                </div>
+                                <div className="card-footer menu-card-footer d-flex justify-content-between align-items-center">
+                                  <span>{dish.matprice} kr</span>
+                                  <button
+                                    type="button"
+                                    className="btn btn-sm btn-success"
+                                    onClick={() => addToCart(dish)}
+                                  >
+                                    Lägg till
+                                  </button>
+                                </div>
+                              </div>
                             </div>
-                            <div className="card-footer menu-card-footer d-flex justify-content-between align-items-center">
-                              <span>{item.price}</span>
-                              <button
-                                type="button"
-                                className="btn btn-sm btn-success"
-                                onClick={() => addToCart(item, selectedRestaurant.name)}
-                              >
-                                Lägg till
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      ))
-                  )}
-                </div>
-              </div>
-            ) : (
-              <>
-                <div className="menu-section mb-4">
-                  <h3 className="menu-section-title">{selectedRestaurant.name}</h3>
-                  <p className="menu-card-text">Här är menyn för {selectedRestaurant.name}.</p>
-                </div>
-
-                {selectedRestaurant.sections.map((section) => (
-                  <div className="menu-section mb-5" key={section.title}>
-                    <h3 className="menu-section-title">{section.title}</h3>
-                    <div className="menu-items-scroll">
-                      {section.items.map((item) => (
-                        <div className="menu-scroll-item" key={`${item.name}-${section.title}`}>
-                          <div className="menu-card card h-100 shadow-sm overflow-hidden">
-                            <img
-                              src={process.env.PUBLIC_URL + "/MAT-IMAGES/" + item.image}
-                              alt={item.name}
-                              className="menu-card-img-top"
-                            />
-                            <div className="card-body">
-                              <h5>{item.name}</h5>
-                              <p className="menu-card-text">{item.description}</p>
-                            </div>
-                            <div className="card-footer menu-card-footer d-flex justify-content-between align-items-center">
-                              <span>{item.price}</span>
-                              <button
-                                type="button"
-                                className="btn btn-sm btn-success"
-                                onClick={() => addToCart(item, selectedRestaurant.name)}
-                              >
-                                Lägg till
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
+                          ))}
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </>
-            )}
+                  ) : (
+                    <>
+                      {/* Restaurant view */}
+                      <div className="menu-section mb-4">
+                        <h3 className="menu-section-title">{selectedRestaurant.name}</h3>
+                        <p className="menu-card-text">Här är menyn för {selectedRestaurant.name}.</p>
+                      </div>
+
+                      <div className="menu-section mb-5">
+                        <div className="menu-items-scroll">
+                          {dishes
+                            .filter((dish) => (dish.resturant || "Övrigt") === selectedRestaurant.name)
+                            .map((dish) => (
+                              <div className="menu-scroll-item" key={dish.matnamn}>
+                                <div className="menu-card card h-100 shadow-sm overflow-hidden">
+                                  {dish.matimage ? (
+                                    <img
+                                      src={process.env.PUBLIC_URL + "/MAT-IMAGES/" + dish.matimage}
+                                      alt={dish.matnamn}
+                                      className="menu-card-img-top"
+                                    />
+                                  ) : (
+                                    <div className="menu-card-img-top" style={{
+                                      backgroundColor: '#e9ecef',
+                                      height: '200px',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                      fontSize: '12px',
+                                      color: '#6c757d'
+                                    }}>
+                                      [Ingen bild]
+                                    </div>
+                                  )}
+                                  <div className="card-body">
+                                    <h5>{dish.matnamn}</h5>
+                                    <p className="menu-card-text">{dish.matdesc || 'Ingen beskrivning'}</p>
+                                  </div>
+                                  <div className="card-footer menu-card-footer d-flex justify-content-between align-items-center">
+                                    <span>{dish.matprice} kr</span>
+                                    <button
+                                      type="button"
+                                      className="btn btn-sm btn-success"
+                                      onClick={() => addToCart(dish)}
+                                    >
+                                      Lägg till
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </>
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
