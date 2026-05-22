@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const userModel = require('./User_model');
 const dishModel = require('./Mat_rätter_model');
+const { sendReceiptEmail } = require('./emailService');
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -130,6 +131,31 @@ app.put('/api/dishes/:matNamn', async (req, res, next) => {
 app.delete('/api/dishes/:matNamn', async (req, res, next) => {
   try {
     const result = await dishModel.deleteDish(req.params.matNamn);
+    res.status(200).json(result);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// ==================== EMAIL ROUTES ====================
+
+// SEND receipt email
+app.post('/api/send-receipt', async (req, res, next) => {
+  try {
+    const { customerEmail, customerName, cartItems, totalAmount, orderId } = req.body;
+
+    if (!customerEmail || !customerName || !cartItems || !totalAmount) {
+      return res.status(400).json({ error: 'Missing required fields: customerEmail, customerName, cartItems, totalAmount' });
+    }
+
+    const result = await sendReceiptEmail(
+      customerEmail,
+      customerName,
+      cartItems,
+      totalAmount,
+      orderId || `ORD-${Date.now()}`
+    );
+
     res.status(200).json(result);
   } catch (err) {
     next(err);

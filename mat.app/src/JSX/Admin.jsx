@@ -7,6 +7,7 @@ const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3001";
 export default function Admin() {
   const [showCreateUserForm, setShowCreateUserForm] = useState(false);
   const [showCreateDishForm, setShowCreateDishForm] = useState(false);
+  const [showRemoveDishForm, setShowRemoveDishForm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [formData, setFormData] = useState({
@@ -28,6 +29,7 @@ export default function Admin() {
     matDesc: "",
     restaurant: "",
   });
+  const [dishToRemove, setDishToRemove] = useState("");
 
   /* Uppdaterar formulärvärden för att skapa en ny användare. */
   const handleInputChange = (e) => {
@@ -159,6 +161,43 @@ export default function Admin() {
     }
   };
 
+  /* Tar bort en maträtt från servern via API och visar statusmeddelanden. */
+  const handleRemoveDish = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage("");
+
+    if (!dishToRemove) {
+      setMessage("✗ Error: Dish name is required.");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_URL}/api/dishes/${dishToRemove}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to remove dish");
+      }
+
+      setMessage(`✓ Dish "${dishToRemove}" removed successfully!`);
+      setDishToRemove("");
+      window.dispatchEvent(new Event('dishAdded'));
+      setTimeout(() => setShowRemoveDishForm(false), 2000);
+    } catch (error) {
+      setMessage(`✗ Error: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="admin-page">
       <div className="admin-header">
@@ -216,6 +255,12 @@ export default function Admin() {
             onClick={() => setShowCreateDishForm(!showCreateDishForm)}
           >
             {showCreateDishForm ? "Stäng formulär" : "Lägg till ny maträtt"}
+          </button>
+          <button
+            className="admin-action"
+            onClick={() => setShowRemoveDishForm(!showRemoveDishForm)}
+          >
+            {showRemoveDishForm ? "Stäng formulär" : "Ta bort maträtt"}
           </button>
         </section>
       </div>
@@ -447,6 +492,39 @@ export default function Admin() {
 
             <button type="submit" className="admin-action" disabled={loading}>
               {loading ? "Lägger till..." : "Lägg till maträtt"}
+            </button>
+          </form>
+        </section>
+      )}
+
+      {showRemoveDishForm && (
+        <section className="admin-card remove-dish-form">
+          <h3>Ta bort maträtt</h3>
+          <form onSubmit={handleRemoveDish}>
+            <div className="form-group">
+              <label htmlFor="dishToRemove">Maträtt namn *</label>
+              <input
+                type="text"
+                id="dishToRemove"
+                value={dishToRemove}
+                onChange={(e) => setDishToRemove(e.target.value)}
+                placeholder="Ange namn på maträtten att ta bort"
+                required
+              />
+            </div>
+
+            {message && (
+              <div
+                className={`message ${
+                  message.includes("✓") ? "success" : "error"
+                }`}
+              >
+                {message}
+              </div>
+            )}
+
+            <button type="submit" className="admin-action" disabled={loading}>
+              {loading ? "Tar bort..." : "Ta bort maträtt"}
             </button>
           </form>
         </section>

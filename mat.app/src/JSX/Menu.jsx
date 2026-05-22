@@ -184,7 +184,7 @@ export default function Menu() {
                               <div className="menu-card card h-100 shadow-sm overflow-hidden">
                                 {dish.matimage ? (
                                   <img
-                                    src={process.env.PUBLIC_URL + "/MAT-IMAGES/" + dish.matimage}
+                                    src={process.env.PUBLIC_URL + "../public/MAT-IMAGES/" + dish.matimage}
                                     alt={dish.matnamn}
                                     className="menu-card-img-top"
                                   />
